@@ -1,0 +1,36 @@
+-- indent-blankline.nvim 是一個用於顯示縮進的插件，它可以幫助我們更好地理解代碼的結構。
+return {
+	"lukas-reineke/indent-blankline.nvim",
+	event = { "BufReadPost", "BufNewFile" },
+	config = function()
+		local highlight = {
+			"RainbowRed",
+			"RainbowYellow",
+			"RainbowBlue",
+			"RainbowOrange",
+			"RainbowGreen",
+			"RainbowViolet",
+			"RainbowCyan",
+		}
+
+		local hooks = require("ibl.hooks")
+
+		-- 設定顏色，每次切換 colorscheme 時重新應用
+		hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+			vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+			vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+			vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+			vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+			vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+			vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+			vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+		end)
+
+		-- 啟動 indent-blankline.nvim
+		require("ibl").setup({
+			indent = {
+				highlight = highlight, -- 使用彩虹顏色
+			},
+		})
+	end,
+}
