@@ -1,0 +1,4 @@
+
+# 本地私有設定（不進 Git 倉庫）
+local.nix
+hardware-configuration.nix

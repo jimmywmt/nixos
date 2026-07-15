@@ -22,7 +22,7 @@ cp /etc/nixos/hardware-configuration.nix ~/Downloads/
 
 ```bash
 mkdir -p ~/.config
-git clone [https://github.com/jimmywmt/nixos.git](https://github.com/jimmywmt/nixos.git) ~/.config/nixos
+git clone https://github.com/jimmywmt/nixos.git ~/.config/nixos
 cd ~/.config/nixos
 ```
 
@@ -36,16 +36,15 @@ cd ~/.config/nixos
 cp ~/Downloads/hardware-configuration.nix ./
 ```
 
-### 4. 發動 Git 索引封印咒語 (核心防線)
+### 4. 建立不同機器設定
 
-在檔案就緒、但還沒 rebuild 之前，立刻施展隱形法術，鎖死這兩發硬體檔案。這能確保本地修改滿血通電，但 Git 永遠假裝它們是透明的，絕對不沾染 GitHub 遠端倉庫：
+在檔案就緒、但還沒 rebuild 之前，立刻建立local.nix檔案。這能確保本地修改滿血通電：
 
 ```bash
-git update-index --assume-unchanged local.nix
-git update-index --assume-unchanged hardware-configuration.nix
+cp local.nix.example local.nix
 ```
 
-如果還有一些檔案需要排除，例如 profiles/gpu-desktop.nix
+如果要修改 profiles/gpu-desktop.nix
 
 ```bash
 git update-index --assume-unchanged profiles/gpu-desktop.nix
