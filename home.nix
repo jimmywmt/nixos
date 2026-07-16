@@ -261,14 +261,79 @@
       temperature = { critical-threshold = 75; format = "{temperatureC}°C"; };
     }];
     style = ''
-      * { font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC", sans-serif; font-size: 13px; font-weight: 600; border: none; border-radius: 0; }
-      window#waybar { background-color: transparent; }
-      #workspaces button { padding: 0 10px; margin: 4px 2px; background-color: rgba(30, 30, 46, 0.7); color: #cdd6f4; border-radius: 6px; }
-      #workspaces button.focused { background-color: #ca9ee6; color: #1e1e2e; }
-      #taskbar button { padding: 0 12px; margin: 4px 2px; background-color: rgba(45, 45, 70, 0.6); color: #cdd6f4; border-radius: 6px; border-bottom: 2px solid transparent; }
-      #taskbar button.active { background-color: rgba(100, 114, 125, 0.8); border-bottom: 2px solid #b4befe; }
-      #clock { font-family: "JetBrainsMono Nerd Font"; padding: 0 16px; margin: 4px 0; background-color: rgba(30, 30, 46, 0.85); color: #f2cdcd; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
-      #cpu { color: #89b4fa; } #memory { color: #a6e3a1; } #temperature { color: #eba0ac; }
+      * {
+        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        border-radius: 0;
+      }
+
+      window#waybar {
+        background-color: transparent;
+      }
+
+      #workspaces button {
+        padding: 0 10px;
+        margin: 4px 2px;
+        background-color: rgba(30, 30, 46, 0.7);
+        color: #cdd6f4;
+        border-radius: 6px;
+      }
+
+      #workspaces button.focused {
+        background-color: #ca9ee6;
+        color: #1e1e2e;
+      }
+
+      #taskbar button {
+        padding: 0 12px;
+        margin: 4px 2px;
+        background-color: rgba(45, 45, 70, 0.6);
+        color: #cdd6f4;
+        border-radius: 6px;
+        border-bottom: 2px solid transparent;
+      }
+
+      #taskbar button.active {
+        background-color: rgba(100, 114, 125, 0.8);
+        border-bottom: 2px solid #b4befe;
+      }
+
+      #clock {
+        font-family: "JetBrainsMono Nerd Font";
+        padding: 0 16px;
+        margin: 4px 0;
+        background-color: rgba(30, 30, 46, 0.85);
+        color: #f2cdcd;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      #cpu { color: #89b4fa; }
+      #memory { color: #a6e3a1; }
+      #temperature { color: #eba0ac; }
+
+      /* ──────────────────────────────────────────────────────────
+         🎯 托盤與網路圖示呼吸防線（物理拉開間距）
+         ────────────────────────────────────────────────────────── */
+
+      /* 1. 托盤外圍區塊：與最右邊緣拉開 12px 的高雅距離 */
+      #tray {
+        margin-right: 12px;
+        padding: 0 6px;
+      }
+
+      /* 2. 托盤內部的每一個圖示（鍵盤、網路、藍牙等）：左右保持大呼吸空間，徹底告別擁擠 */
+      #tray > * {
+        padding: 0 8px;
+        margin: 0 4px;
+      }
+
+      /* 3. (選配) 如果您有使用 Waybar 內建 network 模組，也一併給它右側間距 */
+      #network {
+        margin-right: 8px;
+      }
     '';
   };
 
