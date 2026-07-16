@@ -361,7 +361,7 @@
         # 1. 針對所有實體滑鼠 (pointer) 的設定
         "type:pointer" = {
           # 啟動自然捲動（向上滾動時頁面向上，類似 macOS/手機滑動手感，預設為 disabled）
-          natural_scroll = "disabled";
+          natural_scroll = "enable";
 
           # 關閉滑鼠加速（Flat），這對寫 Code 定位或射擊遊戲極度重要，手感會完全線性一對一
           accel_profile = "flat";
