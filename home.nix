@@ -290,6 +290,23 @@
     };
   };
 
+  # 🎨 完美的 GTK 視覺防線
+  gtk = {
+    enable = true;
+
+    # 🎯 啟用 Adwaita 圖示主題，徹底解決 nm-applet 圖示遺失問題
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
+
+    # (選配) 如果您想要乾淨的 GTK 3 主題
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+  };
+
   services.network-manager-applet.enable = true; # Sway 網路狀態欄位
 
   # ----------------------------------------------------------------------------
