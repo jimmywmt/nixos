@@ -10,7 +10,6 @@
   hardware.cpu.amd.updateMicrocode = true;
   hardware.graphics.extraPackages = with pkgs; [
     rocmPackages.clr.icd # 👑 ROCm 本地 AI 算力底座 (未來跑本地 LLM 必備)
-    amdvlk               # AMD 官方 Vulkan 核心
   ];
 
   # 🟢 流派 B：NVIDIA 顯示卡官方開源驅動模組 (預設註解，若換卡請解鎖下方 8 行，並註釋掉上方 AMD 流派)
