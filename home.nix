@@ -356,6 +356,27 @@
         "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
         "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
       };
+      # 🎯 滑鼠與觸控板的終極硬體設定
+      input = {
+        # 1. 針對所有實體滑鼠 (pointer) 的設定
+        "type:pointer" = {
+          # 啟動自然捲動（向上滾動時頁面向上，類似 macOS/手機滑動手感，預設為 disabled）
+          natural_scroll = "disabled";
+
+          # 關閉滑鼠加速（Flat），這對寫 Code 定位或射擊遊戲極度重要，手感會完全線性一對一
+          accel_profile = "flat";
+
+          # 指標靈敏度速度調整（範圍 -1.0 到 1.0，0 為不改變）
+          pointer_accel = "0.6";
+        };
+
+        # 2. 針對所有筆電觸控板 (touchpad) 的設定
+        "type:touchpad" = {
+          natural_scroll = "enabled";  # 雙指滑動自然捲動
+          tap = "enabled";             # 輕觸代表點擊（不用每次都用力按下去）
+          middle_emulation = "enabled";# 左右鍵同時按代表滑鼠中鍵
+        };
+      };
       startup = [
         { command = "fcitx5 -d --replace"; always = true; }
         { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
