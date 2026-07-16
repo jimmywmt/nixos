@@ -17,48 +17,50 @@
   # 📦 SECTION 2: 個人軟體包依賴代管 (User-level Packages)
   # ----------------------------------------------------------------------------
   home.packages = with pkgs; [
-  # 🦀 Rust 現代化 CLI 刀組 (Rewrite It In Rust)
-  ripgrep             # 宇宙最快純文字搜尋引擎，Neovim/Telescope 核心
-  fd                  # 簡單、快速且預設忽略 gitignore 的尋找工具
-  dust             # 用直觀樹狀圖與百分比顯示硬碟佔用的工具 (指令為 dust)
-  procs               # 支援彩色輸出與 Port 查詢的現代化進程檢視器
-  tokei               # 毫秒級程式碼行數與語言佔比統計工具
-  hyperfine           # 命令行基準測試 (Benchmark) 神器，資工效能調校必備
-  delta               # 帶有語法高亮與行號的極美 Git Diff 工具
+    # 🦀 Rust 現代化 CLI 刀組 (Rewrite It In Rust)
+    ripgrep             # 宇宙最快純文字搜尋引擎，Neovim/Telescope 核心
+    fd                  # 簡單、快速且預設忽略 gitignore 的尋找工具
+    dust                # 用直觀樹狀圖與百分比顯示硬碟佔用的工具 (指令為 dust)
+    procs               # 支援彩色輸出與 Port 查詢的現代化進程檢視器
+    tokei               # 毫秒級程式碼行數與語言佔比統計工具
+    hyperfine           # 命令行基準測試 (Benchmark) 神器，資工效能調校必備
+    delta               # 帶有語法高亮與行號的極美 Git Diff 工具
 
-  # 📝 學術論文與開發必備
-  tectonic            # 基於 Rust 的自給自足式 LaTeX 引擎
-  lazygit             # 終端機裡的 Git 圖形化整合介面
-  ghostty             # 現代化、支援 GPU 加速的頂級終端機
-  gnumake             # 傳統 GNU Make 編譯工具
-  gcc                 # GNU 語言編譯器套件 (C/C++)
+    # 📝 學術論文與開發必備
+    tectonic            # 基於 Rust 的自給自足式 LaTeX 引擎
+    lazygit             # 終端機裡的 Git 圖形化整合介面
+    ghostty             # 現代化、支援 GPU 加速的頂級終端機
+    gnumake             # 傳統 GNU Make 編譯工具
+    gcc                 # GNU 語言編譯器套件 (C/C++)
 
-  # 🚀 程式語言與開發環境 (LSP 依賴)
-  go                  # Go 程式語言編譯器與工具鏈
-  rustc               # Rust 核心編譯器
-  cargo               # Rust 套件管理器
-  rustfmt             # Rust 程式碼格式化工具
-  clippy              # Rust 靜態代碼分析 (Linter) 工具
-  temurin-bin-21      # Java 21 執行期環境 (JDK)
-  python3             # Python 3 執行期環境
-  pnpm                # 現代化、極速且節省空間的 Node.js 包管理器
+    # 🚀 程式語言與開發環境 (LSP 依賴)
+    go                  # Go 程式語言編譯器與工具鏈
+    rustc               # Rust 核心編譯器
+    cargo               # Rust 套件管理器
+    rustfmt             # Rust 程式碼格式化工具
+    clippy              # Rust 靜態代碼分析 (Linter) 工具
+    temurin-bin-21      # Java 21 執行期環境 (JDK)
+    python3             # Python 3 執行期環境
+    pnpm                # 現代化、極速且節省空間 of Node.js 包管理器
 
-  # 🗃️ 終端工作流與 Yazi 預覽增強
-  tmux                # 終端機複用器 (Terminal Multiplexer)
-  ffmpegthumbnailer   # 影片縮圖生成器 (供 yazi 預覽影片使用)
-  poppler-utils       # PDF 渲染工具套件 (提供 pdftoppm 供 yazi 預覽 PDF)
+    # 🗃️ 終端工作流與 Yazi 預覽增強
+    tmux                # 終端機複用器 (Terminal Multiplexer)
+    ffmpegthumbnailer   # 影片縮圖生成器 (供 yazi 預覽影片使用)
+    poppler-utils       # PDF 渲染工具套件 (提供 pdftoppm 供 yazi 預覽 PDF)
 
-  # 📡 網路傳輸與遠端掛載
-  aria2               # 極速、輕量化的多協定下載工具 (支援 BT/HTTP)
-  rsync               # 經典的遠端與本地檔案快速同步工具
-  sshfs               # 透過 SSH 將遠端目錄掛載至地端的檔案系統
+    # 📡 網路傳輸與遠端掛載
+    aria2               # 極速、輕量化的多協定下載工具 (支援 BT/HTTP)
+    rsync               # 經典的遠端與本地檔案快速同步工具
+    sshfs               # 透過 SSH 將遠端目錄掛載至地端的檔案系統
 
-  # 🖥️ 視窗管理與螢幕擷取 (Sway / Wayland 生態)
-  grim                # Wayland 截圖工具 (抓取畫面)
-  slurp               # Wayland 區域選取工具 (配合 grim 擷取特定區域)
-  swaybg              # Wayland 桌布設定工具
-  networkmanagerapplet
-  hicolor-icon-theme
+    # 🖥️ 視窗管理與螢幕擷取 (Sway / Wayland 生態)
+    grim                # Wayland 截圖工具 (抓取畫面)
+    slurp               # Wayland 區域選取工具 (配合 grim 擷取特定區域)
+    swaybg              # Wayland 桌布設定工具
+    networkmanagerapplet
+    hicolor-icon-theme
+    wlogout             # 🎯 物理替代 swaynag 的高雅 Wayland 電源選單
+    swaylock            # 🎯 補上這個，Lock 按鈕才動得起來
   ];
 
   # ----------------------------------------------------------------------------
@@ -103,9 +105,9 @@
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true; # 🎯 自動幫您在 Zsh 注入 hook
-      options = [
-        "--cmd cd"                 # 🎯 物理劫持傳統的 cd 命令
-      ];
+    options = [
+      "--cmd cd"                 # 🎯 物理劫持傳統的 cd 命令
+    ];
   };
 
   # ----------------------------------------------------------------------------
@@ -247,23 +249,27 @@
   # ----------------------------------------------------------------------------
   programs.waybar = {
     enable = true;
+    # 🎯 完美對齊最新的 targets 陣列 API，徹底消除編譯警告！
+    systemd = {
+      enable = true;
+      targets = [ "sway-session.target" ];
+    };
     settings = [{
       layer = "top"; position = "top"; height = 34; spacing = 8;
-      modules-left = [ "sway/workspaces" "wlr/taskbar" "sway/mode" ];
+      modules-left = [ "sway/workspaces" ];
       modules-right = [ "cpu" "memory" "temperature" "tray" "clock" "custom/power" ];
 
-      "wlr/taskbar" = { format = "{icon} {title:.15s}"; icon-size = 16; on-click = "activate"; on-click-middle = "close"; ignore-list = [ "Waybar" ]; };
       "sway/workspaces" = { disable-scroll = true; all-outputs = true; format = "{name}"; };
       clock = { format = "{:%H:%M  |  %m/%d}"; tooltip-format = "<tt><small>{calendar}</small></tt>"; };
       cpu = { format = "CPU: {usage}%"; };
       memory = { format = "RAM: {used:0.1f}G"; };
       temperature = { critical-threshold = 75; format = "{temperatureC}°C"; };
-      # 宣告 custom/power 的行為與圖示
+
+      # 🎯 關機選單按鈕：宣告 wlogout
       "custom/power" = {
-        format = "⏻"; # 也可以用 Nerd Font 的 ""
+        format = "⏻";
         tooltip = false;
-        # 點擊左鍵時，調用 swaynag 彈出一個高雅的關機/登出確認選單！
-        on-click = "swaynag -t warning -m 'Power Menu' -b '關機' 'systemctl poweroff' -b '重啟' 'systemctl reboot' -b '登出' 'swaymsg exit'";
+        on-click = "wlogout";
       };
     }];
     style = ''
@@ -292,20 +298,6 @@
         color: #1e1e2e;
       }
 
-      #taskbar button {
-        padding: 0 12px;
-        margin: 4px 2px;
-        background-color: rgba(45, 45, 70, 0.6);
-        color: #cdd6f4;
-        border-radius: 6px;
-        border-bottom: 2px solid transparent;
-      }
-
-      #taskbar button.active {
-        background-color: rgba(100, 114, 125, 0.8);
-        border-bottom: 2px solid #b4befe;
-      }
-
       #clock {
         font-family: "JetBrainsMono Nerd Font";
         padding: 0 16px;
@@ -330,15 +322,10 @@
         padding: 0 6px;
       }
 
-      /* 2. 托盤內部的每一個圖示（鍵盤、網路、藍牙等）：左右保持大呼吸空間，徹底告別擁擠 */
+      /* 2. 托盤內部的每一個圖示（鍵盤、網路等）：左右保持大呼吸空間，徹底告別擁擠 */
       #tray > * {
         padding: 0 8px;
         margin: 0 4px;
-      }
-
-      /* 3. (選配) 如果您有使用 Waybar 內建 network 模組，也一併給它右側間距 */
-      #network {
-        margin-right: 8px;
       }
 
       /* 🎯 電源按鈕專屬美學 */
@@ -351,10 +338,9 @@
         border-radius: 6px;     /* 圓角與 workspaces 保持一致 */
       }
 
-      /* 滑鼠滑過去時，背景加深，提供物理視覺反饋 */
+      /* 滑鼠滑過去時，背景加深 */
       #custom-power:hover {
         background-color: rgba(243, 139, 168, 0.3);
-        cursor: pointer;
       }
     '';
   };
@@ -371,10 +357,10 @@
         "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
       };
       startup = [
-        { command = "waybar"; always = true; }
         { command = "fcitx5 -d --replace"; always = true; }
         { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
       ];
+      # 🎯 物理超渡 Sway 自帶的底部狀態列
       bars = [ ];
     };
   };
@@ -397,6 +383,167 @@
   };
 
   services.network-manager-applet.enable = true; # Sway 網路狀態欄位
+
+  # ----------------------------------------------------------------------------
+  # 🎨 programs.wlogout: 原生六宮格代管（對稱美學，完美適配實體主機！）
+  # ----------------------------------------------------------------------------
+  programs.wlogout = {
+    enable = true;
+
+    # 🎯 讓 Nix 核心自動序列化，100% 乾淨無瑕、完全無污染的 6 顆按鈕配置
+    layout = [
+      {
+        label = "lock";
+        action = "swaylock -f -c 11111b";
+        text = "Lock";
+        keybind = "l";
+      }
+      {
+        label = "logout";
+        action = "swaymsg exit";
+        text = "Logout";
+        keybind = "e";
+      }
+      {
+        label = "suspend";
+        action = "systemctl suspend";
+        text = "Suspend";
+        keybind = "u";
+      }
+      {
+        label = "hibernate";
+        action = "systemctl hibernate";
+        text = "Hibernate";
+        keybind = "h";
+      }
+      {
+        label = "shutdown";
+        action = "systemctl poweroff";
+        text = "Shutdown";
+        keybind = "p";
+      }
+      {
+        label = "reboot";
+        action = "systemctl reboot";
+        text = "Reboot";
+        keybind = "r";
+      }
+    ];
+
+    # 🎯 完整的 6 按鈕 CSS 樣式與圖示注入，完美對齊
+    style = ''
+      * {
+        background-image: none;
+        box-shadow: none;
+      }
+
+      window {
+        background-color: rgba(30, 30, 46, 0.85); /* 磨砂玻璃感底色 */
+      }
+
+      /* 預設狀態與鍵盤焦點：維持和諧的深灰色 */
+      button,
+      button:focus {
+        background-color: rgba(49, 50, 68, 0.5);
+        color: #cdd6f4;
+        border: 2px solid rgba(202, 158, 230, 0.2);
+        border-radius: 12px;
+        margin: 15px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 25%;
+        transition: all 0.2s ease-in-out;
+        outline: none; /* 移除藍色焦點框 */
+      }
+
+      /* 僅在滑鼠懸停 (hover) 或點擊 (active) 時優雅亮起薰衣草紫 */
+      button:active,
+      button:hover {
+        background-color: rgba(202, 158, 230, 0.3);
+        border-color: #ca9ee6;
+        color: #1e1e2e;
+      }
+
+      #lock { background-image: url("${pkgs.wlogout}/share/wlogout/icons/lock.png"); }
+      #logout { background-image: url("${pkgs.wlogout}/share/wlogout/icons/logout.png"); }
+      #suspend { background-image: url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"); }
+      #hibernate { background-image: url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png"); }
+      #shutdown { background-image: url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png"); }
+      #reboot { background-image: url("${pkgs.wlogout}/share/wlogout/icons/reboot.png"); }
+    '';
+  };
+
+  # ----------------------------------------------------------------------------
+  # 🎨 wlogout 磨砂玻璃與圓角高雅主題（完全回歸原廠預設版，不自訂 layout）
+  # ----------------------------------------------------------------------------
+  # xdg.configFile."wlogout/style.css".text = ''
+  #   * {
+  #     background-image: none;
+  #     box-shadow: none;
+  #   }
+  #
+  #   window {
+  #     background-color: rgba(30, 30, 46, 0.85); /* 磨砂玻璃感底色 */
+  #   }
+  #
+  #   /* 預設狀態與鍵盤焦點：維持和諧的深灰色 */
+  #   button,
+  #   button:focus {
+  #     background-color: rgba(49, 50, 68, 0.5);
+  #     color: #cdd6f4;
+  #     border: 2px solid rgba(202, 158, 230, 0.2);
+  #     border-radius: 12px;
+  #     margin: 15px;
+  #     background-repeat: no-repeat;
+  #     background-position: center;
+  #     background-size: 25%;
+  #     transition: all 0.2s ease-in-out;
+  #     outline: none; /* 移除藍色焦點框 */
+  #   }
+  #
+  #   /* 僅在滑鼠懸停 (hover) 或點擊 (active) 時優雅亮起薰衣草紫 */
+  #   button:active,
+  #   button:hover {
+  #     background-color: rgba(202, 158, 230, 0.3);
+  #     border-color: #ca9ee6;
+  #     color: #1e1e2e;
+  #   }
+  #
+  #   #lock { background-image: url("${pkgs.wlogout}/share/wlogout/icons/lock.png"); }
+  #   #logout { background-image: url("${pkgs.wlogout}/share/wlogout/icons/logout.png"); }
+  #   #suspend { background-image: url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"); }
+  #   #hibernate { background-image: url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png"); }
+  #   #shutdown { background-image: url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png"); }
+  #   #reboot { background-image: url("${pkgs.wlogout}/share/wlogout/icons/reboot.png"); }
+  # '';
+  #
+  # 🎯 物理防線：用 builtins.toJSON 讓 Nix 引擎自己去編譯生成 JSON，完全跳過手寫符號的雷區
+  # xdg.configFile."wlogout/layout".text = builtins.toJSON [
+  #   {
+  #     label = "lock";
+  #     action = "swaylock -f -c 11111b";
+  #     text = "Lock";
+  #     keybind = "l";
+  #   }
+  #   {
+  #     label = "logout";
+  #     action = "swaymsg exit";
+  #     text = "Logout";
+  #     keybind = "e";
+  #   }
+  #   {
+  #     label = "shutdown";
+  #     action = "systemctl poweroff";
+  #     text = "Shutdown";
+  #     keybind = "p";
+  #   }
+  #   {
+  #     label = "reboot";
+  #     action = "systemctl reboot";
+  #     text = "Reboot";
+  #     keybind = "r";
+  #   }
+  # ];
 
   # ----------------------------------------------------------------------------
   # 📝 SECTION 8: 全域代碼規範：由 Home Manager 統一管理的全域 .editorconfig 宣告
