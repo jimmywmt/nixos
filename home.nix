@@ -57,6 +57,8 @@
   grim                # Wayland 截圖工具 (抓取畫面)
   slurp               # Wayland 區域選取工具 (配合 grim 擷取特定區域)
   swaybg              # Wayland 桌布設定工具
+  networkmanagerapplet
+  hicolor-icon-theme
   ];
 
   # ----------------------------------------------------------------------------
