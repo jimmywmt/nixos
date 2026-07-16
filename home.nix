@@ -224,18 +224,19 @@
 
   programs.git = {
     enable = true;
-    userName = "Jimmy Ming-Tai Wu";
-    userEmail = "wmt@wmt35.idv.tw";
+    settings = {
+      user = {
+        name = "Jimmy Ming-Tai Wu";
+        email = "wmt@wmt35.idv.tw";
+      };
+      # 🎯 告訴 Git 引擎：我們不要用 GPG，改用 SSH 格式簽署
+      gpg.format = "ssh";
+    };
 
     # 🔐 現代化 SSH 簽署防線
     signing = {
       key = "~/.ssh/id_ed25519.pub"; # 🎯 指向您本機的 SSH 公鑰路徑
       signByDefault = true;
-    };
-
-    extraConfig = {
-      # 🎯 告訴 Git 引擎：我們不要用 GPG，改用 SSH 格式簽署
-      gpg.format = "ssh";
     };
   };
 
