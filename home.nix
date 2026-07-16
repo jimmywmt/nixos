@@ -250,8 +250,7 @@
     settings = [{
       layer = "top"; position = "top"; height = 34; spacing = 8;
       modules-left = [ "sway/workspaces" "wlr/taskbar" "sway/mode" ];
-      modules-center = [ "clock" ];
-      modules-right = [ "cpu" "memory" "temperature" "tray" ];
+      modules-right = [ "cpu" "memory" "temperature" "tray" "clock" "custom/power" ];
 
       "wlr/taskbar" = { format = "{icon} {title:.15s}"; icon-size = 16; on-click = "activate"; on-click-middle = "close"; ignore-list = [ "Waybar" ]; };
       "sway/workspaces" = { disable-scroll = true; all-outputs = true; format = "{name}"; };
@@ -259,6 +258,13 @@
       cpu = { format = "CPU: {usage}%"; };
       memory = { format = "RAM: {used:0.1f}G"; };
       temperature = { critical-threshold = 75; format = "{temperatureC}°C"; };
+      # 宣告 custom/power 的行為與圖示
+      "custom/power" = {
+        format = "⏻"; # 也可以用 Nerd Font 的 ""
+        tooltip = false;
+        # 點擊左鍵時，調用 swaynag 彈出一個高雅的關機/登出確認選單！
+        on-click = "swaynag -t warning -m 'Power Menu' -b '關機' 'systemctl poweroff' -b '重啟' 'systemctl reboot' -b '登出' 'swaymsg exit'";
+      };
     }];
     style = ''
       * {
@@ -333,6 +339,22 @@
       /* 3. (選配) 如果您有使用 Waybar 內建 network 模組，也一併給它右側間距 */
       #network {
         margin-right: 8px;
+      }
+
+      /* 🎯 電源按鈕專屬美學 */
+      #custom-power {
+        color: #f38ba8;         /* 採用 Catppuccin 經典的草莓紅，顯眼且高雅 */
+        font-size: 14px;        /* 稍微放大一點點 */
+        padding: 0 12px;        /* 左右按鈕內距 */
+        margin: 4px 4px;        /* 物理外距，防止和 clock 擠在一起 */
+        background-color: rgba(243, 139, 168, 0.15); /* 淡淡的紅色半透明背景 */
+        border-radius: 6px;     /* 圓角與 workspaces 保持一致 */
+      }
+
+      /* 滑鼠滑過去時，背景加深，提供物理視覺反饋 */
+      #custom-power:hover {
+        background-color: rgba(243, 139, 168, 0.3);
+        cursor: pointer;
       }
     '';
   };
