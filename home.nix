@@ -14,13 +14,24 @@
   home.stateVersion = "26.05";
 
   # ----------------------------------------------------------------------------
-  # 📦 SECTION 2: 個人軟體包依賴代管 (User-level Packages)
+  # ⌨️ SECTION 2: 全域輸入法與環境變數對齊 (Wayland Input Method)
+  # ----------------------------------------------------------------------------
+  # 🎯 注入 Wayland 環境變數，確保 Sway 底下所有軟體（GTK/Qt/Ghostty）能順暢呼叫 Fcitx5
+  home.sessionVariables = {
+    GTK_IM_MODULE = "fcitx5";
+    QT_IM_MODULE = "fcitx5";
+    XMODIFIERS = "@im=fcitx5";
+    IMSETTINGS_MODULE = "fcitx5";
+  };
+
+  # ----------------------------------------------------------------------------
+  # 📦 SECTION 3: 個人軟體包依賴代管 (User-level Packages)
   # ----------------------------------------------------------------------------
   home.packages = with pkgs; [
     # 🦀 Rust 現代化 CLI 刀組 (Rewrite It In Rust)
     ripgrep             # 宇宙最快純文字搜尋引擎，Neovim/Telescope 核心
     fd                  # 簡單、快速且預設忽略 gitignore 的尋找工具
-    dust                # 用直觀樹狀圖與百分比顯示硬碟佔用的工具 (指令為 dust)
+    dust                # 用直觀樹狀圖與百分比顯示硬碟佔用的工具
     procs               # 支援彩色輸出與 Port 查詢的現代化進程檢視器
     tokei               # 毫秒級程式碼行數與語言佔比統計工具
     hyperfine           # 命令行基準測試 (Benchmark) 神器，資工效能調校必備
@@ -64,7 +75,7 @@
   ];
 
   # ----------------------------------------------------------------------------
-  # 🐚 SECTION 3: Zsh 終端 Shell 與 Antidote 外掛管理機制
+  # 🐚 SECTION 4: Zsh 終端 Shell 與 Antidote 外掛管理機制
   # ----------------------------------------------------------------------------
   programs.zsh = {
     enable = true;
@@ -75,7 +86,7 @@
     shellAliases = {
       ll   = "ls -l";
       g    = "git";
-      # 🎯 終極防線：讀取本地環境變數 $NIX_PROFILE，若無設定則預設以 pve-profile 安全降維防護
+      # 🎯 終極防線：讀取本地環境變數 $NIX_PROFILE，若無設定則預設以 pve-profile 安全配置
       nr   = "git add -A && sudo nixos-rebuild switch --flake ~/.config/nixos/#\${NIX_PROFILE:-pve-profile} && exec zsh";
       nxc  = "sudo nix-collect-garbage --delete-old";
       nxcg = "nix-env --delete-generations old && nix-store --gc";
@@ -89,7 +100,7 @@
       umn  = "udisksctl unmount -b";
       poff = "udisksctl power-off -b";
       # 🛰️ 一槍清點全系統被 direnv 列管的黃金地段
-      dls = "head -n 1 ~/.local/share/direnv/allow/* 2>/dev/null";
+      dls  = "head -n 1 ~/.local/share/direnv/allow/* 2>/dev/null";
     };
 
     antidote = {
@@ -111,7 +122,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🎨 SECTION 4: Starship 現代化跨 Shell 提示字元（Prompt）設定
+  # 🎨 SECTION 5: Starship 現代化跨 Shell 提示字元（Prompt）設定
   # ----------------------------------------------------------------------------
   programs.starship = {
     enable = true;
@@ -155,7 +166,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 📝 SECTION 5: Neovim 編輯器全權代管與配置
+  # 📝 SECTION 6: Neovim 編輯器與配置管理
   # ----------------------------------------------------------------------------
   programs.neovim = {
     enable = true;
@@ -175,7 +186,7 @@
   xdg.configFile."nvim".source = ./dotfiles/nvim;
 
   # ----------------------------------------------------------------------------
-  # 🛠️ SECTION 6: 現代化效能工具
+  # 🛠️ SECTION 7: 現代化系統服務與 CLI 工具鏈
   # ----------------------------------------------------------------------------
   services.udiskie.enable = true;
 
@@ -245,11 +256,26 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SECTION 7: Wayland 平鋪式視窗管理器 Sway 宇宙與 Waybar 核心宣告
+  # 🖥️ SECTION 8: Wayland 視窗管理 (Sway, Waybar & GTK)
   # ----------------------------------------------------------------------------
+  services.network-manager-applet.enable = true; # Sway 網路狀態欄位
+
+  # 🎨 完美的 GTK 視覺防線（解決 nm-applet 圖示遺失問題）
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+  };
+
+  # 📊 Waybar 頂部狀態列
   programs.waybar = {
     enable = true;
-    # 🎯 完美對齊最新的 targets 陣列 API，徹底消除編譯警告！
     systemd = {
       enable = true;
       targets = [ "sway-session.target" ];
@@ -265,7 +291,6 @@
       memory = { format = "RAM: {used:0.1f}G"; };
       temperature = { critical-threshold = 75; format = "{temperatureC}°C"; };
 
-      # 🎯 關機選單按鈕：宣告 wlogout
       "custom/power" = {
         format = "⏻";
         tooltip = false;
@@ -312,159 +337,162 @@
       #memory { color: #a6e3a1; }
       #temperature { color: #eba0ac; }
 
-      /* ──────────────────────────────────────────────────────────
-         🎯 托盤與網路圖示呼吸防線（物理拉開間距）
-         ────────────────────────────────────────────────────────── */
-
-      /* 1. 托盤外圍區塊：與最右邊緣拉開 12px 的高雅距離 */
       #tray {
         margin-right: 12px;
         padding: 0 6px;
       }
 
-      /* 2. 托盤內部的每一個圖示（鍵盤、網路等）：左右保持大呼吸空間，徹底告別擁擠 */
       #tray > * {
         padding: 0 8px;
         margin: 0 4px;
       }
 
-      /* 🎯 電源按鈕專屬美學 */
       #custom-power {
-        color: #f38ba8;         /* 採用 Catppuccin 經典的草莓紅，顯眼且高雅 */
-        font-size: 14px;        /* 稍微放大一點點 */
-        padding: 0 12px;        /* 左右按鈕內距 */
-        margin: 4px 4px;        /* 物理外距，防止和 clock 擠在一起 */
-        background-color: rgba(243, 139, 168, 0.15); /* 淡淡的紅色半透明背景 */
-        border-radius: 6px;     /* 圓角與 workspaces 保持一致 */
+        color: #f38ba8;
+        font-size: 14px;
+        padding: 0 12px;
+        margin: 4px 4px;
+        background-color: rgba(243, 139, 168, 0.15);
+        border-radius: 6px;
       }
 
-      /* 滑鼠滑過去時，背景加深 */
       #custom-power:hover {
         background-color: rgba(243, 139, 168, 0.3);
       }
     '';
   };
 
+  # 🌀 Sway 視窗管理器配置
   wayland.windowManager.sway = {
     enable = true;
     config = rec {
-      modifier = "Mod4"; terminal = "ghostty"; menu = "dmenu_run";
+      modifier = "Mod4";
+      terminal = "ghostty";
+      menu = "wofi --show drun";
       keybindings = let mod = modifier; in pkgs.lib.mkOptionDefault {
-        "${mod}+Return" = "exec ${terminal}"; "${mod}+d" = "exec ${menu}"; "${mod}+Shift+q" = "kill"; "${mod}+Shift+c" = "reload";
-        "${mod}+b" = "splith"; "${mod}+v" = "splitv"; "${mod}+e" = "layout toggle split"; "${mod}+w" = "layout tabbed";
-        "${mod}+m" = "fullscreen toggle"; "${mod}+Shift+space" = "floating toggle";
-        "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
-        "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
+        "${mod}+Return" = "exec ${terminal}";
+        "${mod}+d" = "exec ${menu}";
+        "${mod}+Shift+q" = "kill";
+        "${mod}+Shift+c" = "reload";
+        "${mod}+b" = "splith";
+        "${mod}+v" = "splitv";
+        "${mod}+e" = "layout toggle split";
+        "${mod}+w" = "layout tabbed";
+        "${mod}+m" = "fullscreen toggle";
+        "${mod}+Shift+space" = "floating toggle";
+        "${mod}+h" = "focus left";
+        "${mod}+j" = "focus down";
+        "${mod}+k" = "focus up";
+        "${mod}+l" = "focus right";
+        "${mod}+Shift+h" = "move left";
+        "${mod}+Shift+j" = "move down";
+        "${mod}+Shift+k" = "move up";
+        "${mod}+Shift+l" = "move right";
       };
-      # 🎯 滑鼠與觸控板的終極硬體設定
+
+      # 滑鼠與觸控板硬體配置
       input = {
-        # 1. 針對所有實體滑鼠 (pointer) 的設定
         "type:pointer" = {
-          # 啟動自然捲動（向上滾動時頁面向上，類似 macOS/手機滑動手感，預設為 disabled）
-          natural_scroll = "enable";
-
-          # 關閉滑鼠加速（Flat），這對寫 Code 定位或射擊遊戲極度重要，手感會完全線性一對一
-          accel_profile = "flat";
-
-          # 指標靈敏度速度調整（範圍 -1.0 到 1.0，0 為不改變）
+          natural_scroll = "enabled"; # 修正拼字：確保自然捲動正常
+          accel_profile = "flat";     # 關閉滑鼠加速，確保一對一線性手感
           pointer_accel = "0.6";
         };
-
-        # 2. 針對所有筆電觸控板 (touchpad) 的設定
         "type:touchpad" = {
-          natural_scroll = "enabled";  # 雙指滑動自然捲動
-          tap = "enabled";             # 輕觸代表點擊（不用每次都用力按下去）
-          middle_emulation = "enabled";# 左右鍵同時按代表滑鼠中鍵
+          natural_scroll = "enabled";
+          tap = "enabled";
+          middle_emulation = "enabled";
         };
       };
+
       startup = [
+        # 啟動 Fcitx5，使用 --replace 確保能無縫劫持輸入法焦點
         { command = "fcitx5 -d --replace"; always = true; }
         { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
       ];
-      # 🎯 物理超渡 Sway 自帶的底部狀態列
-      bars = [ ];
+
+      bars = [ ]; # 物理遮蔽 Sway 內建狀態列
     };
   };
 
-  # 🎨 完美的 GTK 視覺防線
-  gtk = {
+  # ----------------------------------------------------------------------------
+  # 🎨 SECTION 9: 應用程式啟動與關機選單自訂 (Wofi & Wlogout)
+  # ----------------------------------------------------------------------------
+  # 🎩 Wofi 啟動器
+  programs.wofi = {
     enable = true;
-
-    # 🎯 啟用 Adwaita 圖示主題，徹底解決 nm-applet 圖示遺失問題
-    iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
+    settings = {
+      show = "drun";
+      width = 600;
+      height = 400;
+      always_parse_args = true;
+      show_indicators = true;
+      insensitive = true;
+      allow_images = true;
+      image_size = 28;
+      prompt = "搜尋應用程式...";
     };
+    style = ''
+      window {
+        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC", sans-serif;
+        font-size: 14px;
+        background-color: rgba(30, 30, 46, 0.85);
+        color: #cdd6f4;
+        border: 2px solid rgba(202, 158, 230, 0.3);
+        border-radius: 12px;
+      }
 
-    # (選配) 如果您想要乾淨的 GTK 3 主題
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
+      #outer-box { padding: 15px; }
+
+      #input {
+        background-color: rgba(49, 50, 68, 0.5);
+        color: #cdd6f4;
+        border: 1px solid rgba(202, 158, 230, 0.2);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 10px;
+      }
+
+      #input:focus {
+        border-color: #ca9ee6;
+        box-shadow: 0 0 4px rgba(202, 158, 230, 0.5);
+      }
+
+      #scroll { margin-top: 5px; }
+      #text { color: #cdd6f4; margin-left: 10px; }
+
+      #entry {
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.1s ease-in-out;
+      }
+
+      #entry:selected {
+        background-color: rgba(202, 158, 230, 0.3);
+        outline: none;
+      }
+
+      #entry:selected #text {
+        color: #ca9ee6;
+        font-weight: bold;
+      }
+    '';
   };
 
-  services.network-manager-applet.enable = true; # Sway 網路狀態欄位
-
-  # ----------------------------------------------------------------------------
-  # 🎨 programs.wlogout: 原生六宮格代管（對稱美學，完美適配實體主機！）
-  # ----------------------------------------------------------------------------
+  # ⏻ Wlogout 六宮格
   programs.wlogout = {
     enable = true;
-
-    # 🎯 讓 Nix 核心自動序列化，100% 乾淨無瑕、完全無污染的 6 顆按鈕配置
     layout = [
-      {
-        label = "lock";
-        action = "swaylock -f -c 11111b";
-        text = "Lock";
-        keybind = "l";
-      }
-      {
-        label = "logout";
-        action = "swaymsg exit";
-        text = "Logout";
-        keybind = "e";
-      }
-      {
-        label = "suspend";
-        action = "systemctl suspend";
-        text = "Suspend";
-        keybind = "u";
-      }
-      {
-        label = "hibernate";
-        action = "systemctl hibernate";
-        text = "Hibernate";
-        keybind = "h";
-      }
-      {
-        label = "shutdown";
-        action = "systemctl poweroff";
-        text = "Shutdown";
-        keybind = "p";
-      }
-      {
-        label = "reboot";
-        action = "systemctl reboot";
-        text = "Reboot";
-        keybind = "r";
-      }
+      { label = "lock"; action = "swaylock -f -c 11111b"; text = "Lock"; keybind = "l"; }
+      { label = "logout"; action = "swaymsg exit"; text = "Logout"; keybind = "e"; }
+      { label = "suspend"; action = "systemctl suspend"; text = "Suspend"; keybind = "u"; }
+      { label = "hibernate"; action = "systemctl hibernate"; text = "Hibernate"; keybind = "h"; }
+      { label = "shutdown"; action = "systemctl poweroff"; text = "Shutdown"; keybind = "p"; }
+      { label = "reboot"; action = "systemctl reboot"; text = "Reboot"; keybind = "r"; }
     ];
-
-    # 🎯 完整的 6 按鈕 CSS 樣式與圖示注入，完美對齊
     style = ''
-      * {
-        background-image: none;
-        box-shadow: none;
-      }
-
-      window {
-        background-color: rgba(30, 30, 46, 0.85); /* 磨砂玻璃感底色 */
-      }
-
-      /* 預設狀態與鍵盤焦點：維持和諧的深灰色 */
-      button,
-      button:focus {
+      * { background-image: none; box-shadow: none; }
+      window { background-color: rgba(30, 30, 46, 0.85); }
+      button, button:focus {
         background-color: rgba(49, 50, 68, 0.5);
         color: #cdd6f4;
         border: 2px solid rgba(202, 158, 230, 0.2);
@@ -474,17 +502,13 @@
         background-position: center;
         background-size: 25%;
         transition: all 0.2s ease-in-out;
-        outline: none; /* 移除藍色焦點框 */
+        outline: none;
       }
-
-      /* 僅在滑鼠懸停 (hover) 或點擊 (active) 時優雅亮起薰衣草紫 */
-      button:active,
-      button:hover {
+      button:active, button:hover {
         background-color: rgba(202, 158, 230, 0.3);
         border-color: #ca9ee6;
         color: #1e1e2e;
       }
-
       #lock { background-image: url("${pkgs.wlogout}/share/wlogout/icons/lock.png"); }
       #logout { background-image: url("${pkgs.wlogout}/share/wlogout/icons/logout.png"); }
       #suspend { background-image: url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"); }
@@ -495,79 +519,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🎨 wlogout 磨砂玻璃與圓角高雅主題（完全回歸原廠預設版，不自訂 layout）
-  # ----------------------------------------------------------------------------
-  # xdg.configFile."wlogout/style.css".text = ''
-  #   * {
-  #     background-image: none;
-  #     box-shadow: none;
-  #   }
-  #
-  #   window {
-  #     background-color: rgba(30, 30, 46, 0.85); /* 磨砂玻璃感底色 */
-  #   }
-  #
-  #   /* 預設狀態與鍵盤焦點：維持和諧的深灰色 */
-  #   button,
-  #   button:focus {
-  #     background-color: rgba(49, 50, 68, 0.5);
-  #     color: #cdd6f4;
-  #     border: 2px solid rgba(202, 158, 230, 0.2);
-  #     border-radius: 12px;
-  #     margin: 15px;
-  #     background-repeat: no-repeat;
-  #     background-position: center;
-  #     background-size: 25%;
-  #     transition: all 0.2s ease-in-out;
-  #     outline: none; /* 移除藍色焦點框 */
-  #   }
-  #
-  #   /* 僅在滑鼠懸停 (hover) 或點擊 (active) 時優雅亮起薰衣草紫 */
-  #   button:active,
-  #   button:hover {
-  #     background-color: rgba(202, 158, 230, 0.3);
-  #     border-color: #ca9ee6;
-  #     color: #1e1e2e;
-  #   }
-  #
-  #   #lock { background-image: url("${pkgs.wlogout}/share/wlogout/icons/lock.png"); }
-  #   #logout { background-image: url("${pkgs.wlogout}/share/wlogout/icons/logout.png"); }
-  #   #suspend { background-image: url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"); }
-  #   #hibernate { background-image: url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png"); }
-  #   #shutdown { background-image: url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png"); }
-  #   #reboot { background-image: url("${pkgs.wlogout}/share/wlogout/icons/reboot.png"); }
-  # '';
-  #
-  # 🎯 物理防線：用 builtins.toJSON 讓 Nix 引擎自己去編譯生成 JSON，完全跳過手寫符號的雷區
-  # xdg.configFile."wlogout/layout".text = builtins.toJSON [
-  #   {
-  #     label = "lock";
-  #     action = "swaylock -f -c 11111b";
-  #     text = "Lock";
-  #     keybind = "l";
-  #   }
-  #   {
-  #     label = "logout";
-  #     action = "swaymsg exit";
-  #     text = "Logout";
-  #     keybind = "e";
-  #   }
-  #   {
-  #     label = "shutdown";
-  #     action = "systemctl poweroff";
-  #     text = "Shutdown";
-  #     keybind = "p";
-  #   }
-  #   {
-  #     label = "reboot";
-  #     action = "systemctl reboot";
-  #     text = "Reboot";
-  #     keybind = "r";
-  #   }
-  # ];
-
-  # ----------------------------------------------------------------------------
-  # 📝 SECTION 8: 全域代碼規範：由 Home Manager 統一管理的全域 .editorconfig 宣告
+  # 📝 SECTION 10: 全域代碼與協定規範 (EditorConfig & SSH Config)
   # ----------------------------------------------------------------------------
   editorconfig = {
     enable = true;
@@ -581,13 +533,13 @@
     };
   };
 
-  # ----------------------------------------------------------------------------
-  # 🌐 SECTION 9: SSH 用戶端與自動跳轉拓撲 (SSH Config IaC)
-  # ----------------------------------------------------------------------------
-  programs.ssh = { enableDefaultConfig = false; settings."*" = { Compression = "yes"; ServerAliveInterval = 60; }; };
+  programs.ssh = {
+    enableDefaultConfig = false;
+    settings."*" = { Compression = "yes"; ServerAliveInterval = 60; };
+  };
 
   # ----------------------------------------------------------------------------
-  # 👑 SECTION 10: Home Manager 自我維護機制
+  # 👑 SECTION 11: Home Manager 核心維護宣告
   # ----------------------------------------------------------------------------
   programs.home-manager.enable = true;
 }
