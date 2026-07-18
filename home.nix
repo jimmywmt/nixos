@@ -106,6 +106,10 @@
     simple-scan           # GNOME 家族的極簡掃描器
     system-config-printer # 傳統的 GTK3 印表機管理面板，方便點擊新增
 
+    # 螢幕管理
+    wlr-randr            # CLI螢幕管理
+    wdisplays            # 🖥️ Sway/Wayland 專用圖形化螢幕管理面板 (滑鼠拖曳排列、動態解析度)
+
     # 🎯 Wayland 專屬輕量通知守護進程
     mako
 
@@ -116,6 +120,10 @@
     unrar           # 物理超渡 rar 檔案
     zstd            # 現代最速壓縮協議（Facebook 開發）
     file-roller     # 🎯 物理呼叫中心：極輕量 GTK 解壓縮總管
+
+    # 🎨 Wayland 頂級動態桌布後台與滑鼠點選 GUI 前端
+    swww
+    waypaper
   ];
 
   # ----------------------------------------------------------------------------
@@ -487,6 +495,8 @@
         { command = "copyq"; always = true; }
         # 通知守護進程
         { command = "mako"; always = true; }
+        # 啟動 swww 守護進程
+        { command = "swww-daemon"; always = true; }
 
       ];
 
@@ -529,6 +539,16 @@
         {
           command = "floating enable";
           criteria = { app_id = "^org\\.gnome\\.FileRoller$"; };
+        }
+
+        {
+          command = "floating enable, resize set 1000 700, move position center";
+          criteria = { app_id = "wdisplays"; };
+        }
+        {
+          # 🎯 桌布管理器：一遞交名片就自動浮動定錨 1100x750 並居中
+          command = "floating enable, resize set 1100 750, move position center";
+          criteria = { app_id = "waypaper"; };
         }
       ];
     };
