@@ -100,6 +100,7 @@
 
     # 🎯 即時通訊軟體區
     telegram-desktop
+    karere
 
     # 🖨️ 印表機和掃描器
     simple-scan           # GNOME 家族的極簡掃描器
@@ -487,6 +488,7 @@
       assigns = {
         "2" = [
           { app_id = "^org\\.telegram\\.desktop$"; }
+          { app_id = "^io\\.github\\.tobagin\\.karere$"; }
         ];
       };
 
@@ -509,10 +511,10 @@
           criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; };
         }
 
-        # 🎯 條款 4：精準捕捉 Telegram，強制浮動，給予自由縮放權限
+        # 🎯 條款 4：精準捕捉 Telegram 與 Karere，強制浮動並給予自由
         {
           command = "floating enable";
-          criteria = { app_id = "^org\\.telegram\\.desktop$"; };
+          criteria = { app_id = "^(org\\.telegram\\.desktop|io\\.github\\.tobagin\\.karere)$"; };
         }
       ];
     };
