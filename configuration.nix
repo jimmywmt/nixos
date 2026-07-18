@@ -78,8 +78,6 @@
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
-  services.printing.enable = true;
-
   # ----------------------------------------------------------------------------
   # 🔊 SECTION 9: 現代化 PipeWire 音訊架構配置 (Audio System)
   # ----------------------------------------------------------------------------
@@ -173,6 +171,27 @@
   home-manager.users.wmt = import ./home.nix;
   environment.shells = [ pkgs.zsh ];
   programs.zsh.enable = true;
+
+  # ----------------------------------------------------------------------------
+  # 🖨️ SECTION 13: 辦公周邊防線：列印與掃描硬體通電 (Peripherals Infrastructure)
+  # ----------------------------------------------------------------------------
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.gutenprint ];
+  };
+
+  # 🎯 啟用 Avahi 背景廣播協議，確保能在區域網域內盲抓網路印表機與 Wi-Fi 複合機
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
+  # 🎯 物理啟用 SANE 掃描器驅動架構，並掛載 airscan 免驅協議以對齊現代複合機
+  hardware.sane = {
+    enable = true;
+    extraBackends = [ pkgs.sane-airscan ];
+  };
 
   system.stateVersion = "26.05";
 }

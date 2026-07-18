@@ -97,6 +97,13 @@
     # 🎯 檔案與剪貼簿臨時置物架防線
     copyq
     wl-clipboard        # 👈 Wayland 底層剪貼簿後端，CopyQ 抓取檔案路徑的實體依賴
+
+    # 🎯 即時通訊軟體區
+    telegram-desktop
+
+    # 🖨️ 印表機和掃描器
+    simple-scan           # GNOME 家族的極簡掃描器
+    system-config-printer # 傳統的 GTK3 印表機管理面板，方便點擊新增
   ];
 
   # ----------------------------------------------------------------------------
@@ -470,6 +477,13 @@
 
       bars = [ ]; # 物理遮蔽 Sway 內建狀態列
 
+      # 🎯 空間劃分防線：指定特定應用程式的轉生工作區
+      assigns = {
+        "2" = [
+          { app_id = "^org\\.telegram\\.desktop$"; }
+        ];
+      };
+
       # 🎯 LINE 雙核心防線：主視窗自由浮動 + 匿名通知物理外包
       window.commands = [
         # 條款 1：精準攔截 LINE 主視窗（標題完全等於 LINE），強制浮動，保留邊框與縮放自由
@@ -487,6 +501,12 @@
         {
           command = "floating enable, resize set 400 px 900 px, move position 75 ppt 5 ppt";
           criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; };
+        }
+
+        # 🎯 條款 4：精準捕捉 Telegram，強制浮動，給予自由縮放權限
+        {
+          command = "floating enable";
+          criteria = { app_id = "^org\\.telegram\\.desktop$"; };
         }
       ];
     };
