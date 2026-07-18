@@ -104,6 +104,9 @@
     # 🖨️ 印表機和掃描器
     simple-scan           # GNOME 家族的極簡掃描器
     system-config-printer # 傳統的 GTK3 印表機管理面板，方便點擊新增
+
+    # 🎯 Wayland 專屬輕量通知守護進程
+    mako
   ];
 
   # ----------------------------------------------------------------------------
@@ -473,6 +476,9 @@
         { command = "pasystray"; always = true; }
         # 剪貼板管理
         { command = "copyq"; always = true; }
+        # 通知守護進程
+        { command = "mako"; always = true; }
+
       ];
 
       bars = [ ]; # 物理遮蔽 Sway 內建狀態列
@@ -515,6 +521,24 @@
       # 🔐 終極防打擾：當無名通知（app_id 與 title 皆為空）誕生時，絕對不准搶奪游標焦點！
       no_focus [app_id="^$" title="^$"]
     '';
+  };
+
+  # 🎯 Mako 通知美學宣告防線：Catppuccin Macchiato 風格
+  services.mako = {
+    enable = true;
+
+    # 💡 所有視覺外觀屬性全面收納至 settings 中，並改為中劃線命名
+    settings = {
+      font = "JetBrainsMono Nerd Font 10";
+      background-color = "#24273add";  # 內斂的摩卡深藍
+      text-color = "#cad3f5";          # 粉白文字
+      border-color = "#8aadf4";        # 科技感淡藍邊框
+      border-size = 2;
+      border-radius = 6;
+      margin = "15,15";
+      padding = "12,18";
+      default-timeout = 6000;          # 6秒後自動隱形
+    };
   };
 
   # ----------------------------------------------------------------------------
