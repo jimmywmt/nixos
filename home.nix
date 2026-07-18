@@ -86,8 +86,17 @@
     usbutils            # 提供 lsusb
 
     # 🎯 極輕量 GUI 檔案管理
-    xfce.thunar
-    xfce.tumbler        # 👈 強烈建議加裝這個！這是 Thunar 的圖片縮圖生成引擎
+    thunar
+    tumbler             # 👈 強烈建議加裝這個！這是 Thunar 的圖片縮圖生成引擎
+
+    # 🎯 現代化音效調度刀組 (PipeWire 體系)
+    pavucontrol         # GUI 音效主控台
+    pulsemixer          # TUI 終端機音量調節器
+    pasystray           # 系統托盤音效管理員 (支援右鍵秒切輸出裝置)
+
+    # 🎯 檔案與剪貼簿臨時置物架防線
+    copyq
+    wl-clipboard        # 👈 Wayland 底層剪貼簿後端，CopyQ 抓取檔案路徑的實體依賴
   ];
 
   # ----------------------------------------------------------------------------
@@ -430,6 +439,7 @@
         "${mod}+Shift+j" = "move down";
         "${mod}+Shift+k" = "move up";
         "${mod}+Shift+l" = "move right";
+        "${mod}+c" = "exec copyq toggle";
       };
 
       # 滑鼠與觸控板硬體配置
@@ -452,6 +462,10 @@
         { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
         # 🎯 確保藍牙托盤開機通電並精準掛載至 Waybar Tray
         { command = "blueman-applet"; always = true; }
+        # 音訊系統托盤
+        { command = "pasystray"; always = true; }
+        # 剪貼板管理
+        { command = "copyq"; always = true; }
       ];
 
       bars = [ ]; # 物理遮蔽 Sway 內建狀態列
@@ -467,6 +481,12 @@
         {
           command = "floating enable, border none, move position 85 ppt 3 ppt";
           criteria = { app_id = "^$"; title = "^$"; };
+        }
+
+        # 🎯 條款 3：精準定製 CopyQ 懸浮置物架
+        {
+          command = "floating enable, resize set 400 px 900 px, move position 75 ppt 5 ppt";
+          criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; };
         }
       ];
     };
