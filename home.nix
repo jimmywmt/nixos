@@ -108,6 +108,14 @@
 
     # 🎯 Wayland 專屬輕量通知守護進程
     mako
+
+    # 📦 個人專屬解壓縮兵器庫 (Compression & Archiving Suite)
+    p7zip           # 萬能的 7z 核心，效能極高
+    zip             # 標準 zip 壓縮工具
+    unzip           # 解 zip 專用老將
+    unrar           # 物理超渡 rar 檔案
+    zstd            # 現代最速壓縮協議（Facebook 開發）
+    file-roller     # 🎯 物理呼叫中心：極輕量 GTK 解壓縮總管
   ];
 
   # ----------------------------------------------------------------------------
@@ -515,6 +523,12 @@
         {
           command = "floating enable";
           criteria = { app_id = "^(org\\.telegram\\.desktop|io\\.github\\.tobagin\\.karere)$"; };
+        }
+
+        # 🎯 條款 5：精準捕捉 GTK 解壓縮總管，強迫其以懸浮姿態降臨，不切割主畫面
+        {
+          command = "floating enable";
+          criteria = { app_id = "^org\\.gnome\\.FileRoller$"; };
         }
       ];
     };
