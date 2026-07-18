@@ -72,6 +72,22 @@
     hicolor-icon-theme
     wlogout             # 🎯 物理替代 swaynag 的高雅 Wayland 電源選單
     swaylock            # 🎯 補上這個，Lock 按鈕才動得起來
+
+    # 🎯 藍牙管理 GUI 核心組件
+    blueman             # 🎯 提供藍牙管理面板與常駐系統托盤
+
+    # 🎯 裝置管理員 GUI 雙子星
+    hardinfo2           # 經典樹狀裝置管理員
+    cpu-x               # 現代化 CPU-Z 複刻版
+
+    # 🎯 現代化 CLI 硬體檢視器
+    fastfetch           # 極速系統總覽
+    pciutils            # 提供 lspci
+    usbutils            # 提供 lsusb
+
+    # 🎯 極輕量 GUI 檔案管理
+    xfce.thunar
+    xfce.tumbler        # 👈 強烈建議加裝這個！這是 Thunar 的圖片縮圖生成引擎
   ];
 
   # ----------------------------------------------------------------------------
@@ -89,7 +105,7 @@
       # 🎯 終極防線：讀取本地環境變數 $NIX_PROFILE，若無設定則預設以 pve-profile 安全配置
       nr   = "git add -A && sudo nixos-rebuild switch --flake ~/.config/nixos/#\${NIX_PROFILE:-pve-profile} && exec zsh";
       nxc  = "sudo nix-collect-garbage --delete-old";
-      nxcg = "nix-env --delete-generations old && nix-store --gc";
+      nxcg = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
       nxl  = "sudo nixos-rebuild list-generations";
       cat  = "bat";
       top  = "btm";
@@ -260,7 +276,7 @@
   # ----------------------------------------------------------------------------
   services.network-manager-applet.enable = true; # Sway 網路狀態欄位
 
-  # 🎨 完美的 GTK 視覺防線（解決 nm-applet 圖示遺失問題）
+  # 🎨 完美的 GTK 視覺防線（解決 nm-applet 與 blueman-applet 圖示遺失問題）
   gtk = {
     enable = true;
     iconTheme = {
@@ -282,10 +298,22 @@
     };
     settings = [{
       layer = "top"; position = "top"; height = 34; spacing = 8;
-      modules-left = [ "sway/workspaces" ];
+      # 🎯 任務欄（wlr/taskbar）注入左側，緊跟在工作區（workspaces）後面
+      modules-left = [ "sway/workspaces" "wlr/taskbar" ];
       modules-right = [ "cpu" "memory" "temperature" "tray" "clock" "custom/power" ];
 
       "sway/workspaces" = { disable-scroll = true; all-outputs = true; format = "{name}"; };
+
+      # 🎯 任務欄行為配置：支援圖示與標題、點擊切換、中鍵關閉
+      "wlr/taskbar" = {
+        format = "{icon} {title}";
+        icon-size = 16;
+        icon-theme = "Adwaita";
+        tooltip-format = "{title}";
+        on-click = "activate";
+        on-click-middle = "close";
+      };
+
       clock = { format = "{:%H:%M  |  %m/%d}"; tooltip-format = "<tt><small>{calendar}</small></tt>"; };
       cpu = { format = "CPU: {usage}%"; };
       memory = { format = "RAM: {used:0.1f}G"; };
@@ -342,11 +370,6 @@
         padding: 0 6px;
       }
 
-      #tray > * {
-        padding: 0 8px;
-        margin: 0 4px;
-      }
-
       #custom-power {
         color: #f38ba8;
         font-size: 14px;
@@ -358,6 +381,25 @@
 
       #custom-power:hover {
         background-color: rgba(243, 139, 168, 0.3);
+      }
+
+      /* 🎯 任務欄樣式配置：使當前作用中的 App 高亮發光 */
+      #taskbar button {
+        padding: 0 10px;
+        margin: 4px 2px;
+        background-color: rgba(49, 50, 68, 0.4);
+        color: #cdd6f4;
+        border-radius: 6px;
+      }
+
+      #taskbar button.active {
+        background-color: rgba(202, 158, 230, 0.4);
+        color: #ca9ee6;
+        border: 1px solid rgba(202, 158, 230, 0.6);
+      }
+
+      #taskbar button:hover {
+        background-color: rgba(202, 158, 230, 0.2);
       }
     '';
   };
@@ -408,10 +450,31 @@
         # 啟動 Fcitx5，使用 --replace 確保能無縫劫持輸入法焦點
         { command = "fcitx5 -d --replace"; always = true; }
         { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
+        # 🎯 確保藍牙托盤開機通電並精準掛載至 Waybar Tray
+        { command = "blueman-applet"; always = true; }
       ];
 
       bars = [ ]; # 物理遮蔽 Sway 內建狀態列
+
+      # 🎯 LINE 雙核心防線：主視窗自由浮動 + 匿名通知物理外包
+      window.commands = [
+        # 條款 1：精準攔截 LINE 主視窗（標題完全等於 LINE），強制浮動，保留邊框與縮放自由
+        {
+          command = "floating enable";
+          criteria = { title = "^LINE$"; };
+        }
+        # 條款 2：精準狙擊 Chrome 噴出的無名通知（app_id 與 title 皆為空），強制浮動並推至右上角
+        {
+          command = "floating enable, border none, move position 85 ppt 3 ppt";
+          criteria = { app_id = "^$"; title = "^$"; };
+        }
+      ];
     };
+    # 在 config 大括號外面，精準追加這段「拒絕奪焦」防線
+    extraConfig = ''
+      # 🔐 終極防打擾：當無名通知（app_id 與 title 皆為空）誕生時，絕對不准搶奪游標焦點！
+      no_focus [app_id="^$" title="^$"]
+    '';
   };
 
   # ----------------------------------------------------------------------------
