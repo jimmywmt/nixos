@@ -71,6 +71,7 @@
     hicolor-icon-theme
     wlogout             # 高雅 Wayland 電源選單
     swaylock            # Lock 按鈕實體依賴
+    nwg-drawer          # 全螢幕圖形化 App 啟動抽屜
 
     # 🎯 藍牙管理 GUI 核心組件
     blueman             # 藍牙管理面板與常駐系統托盤
@@ -508,6 +509,50 @@
       default-timeout = 6000;          # 6秒後自動隱形
     };
   };
+
+  # 🎨 nwg-drawer 全螢幕抽屜視覺定製 (Catppuccin Macchiato 風格)
+  xdg.configFile."nwg-drawer/drawer.css".text = ''
+    window {
+      background-color: rgba(36, 39, 58, 0.88); /* 摩卡深藍 + 優雅毛玻璃半透明 */
+      color: #cad3f5;
+      font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font", sans-serif;
+    }
+
+    /* 頂部搜尋欄 */
+    entry {
+      background-color: rgba(49, 50, 68, 0.5);
+      border: 1px solid rgba(202, 158, 230, 0.3);
+      border-radius: 8px;
+      color: #cdd6f4;
+      padding: 6px 10px;
+    }
+    entry:focus {
+      border-color: #ca9ee6;
+    }
+
+    /* 頂部應用程式分類標籤（All, Internet, Programming...） */
+    #category-button {
+      color: #b8c0e0;
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+    }
+    #category-button:checked {
+      background-color: rgba(202, 158, 230, 0.3);
+      color: #ca9ee6;
+      border-radius: 6px;
+    }
+
+    /* 應用程式圖示按鈕 */
+    #app-button {
+      color: #cdd6f4;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    #app-button:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  '';
 
   # ----------------------------------------------------------------------------
   # 🎨 SECTION 9: 應用程式啟動與關機選單自訂 (Wofi & Wlogout)
