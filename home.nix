@@ -431,6 +431,7 @@
       keybindings = let mod = modifier; in pkgs.lib.mkOptionDefault {
         "${mod}+Return" = "exec ${terminal}";
         "${mod}+d" = "exec ${menu}";
+        "${mod}+Shift+d" = "exec nwg-drawer";
         "${mod}+Shift+q" = "kill";
         "${mod}+Shift+c" = "reload";
         "${mod}+b" = "splith";
