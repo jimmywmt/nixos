@@ -16,7 +16,6 @@
   # ----------------------------------------------------------------------------
   # ⌨️ SECTION 2: 全域輸入法與環境變數對齊 (Wayland Input Method)
   # ----------------------------------------------------------------------------
-  # 🎯 注入 Wayland 環境變數，確保 Sway 底下所有軟體（GTK/Qt/Ghostty）能順暢呼叫 Fcitx5
   home.sessionVariables = {
     GTK_IM_MODULE = "fcitx5";
     QT_IM_MODULE = "fcitx5";
@@ -29,18 +28,18 @@
   # ----------------------------------------------------------------------------
   home.packages = with pkgs; [
     # 🦀 Rust 現代化 CLI 刀組 (Rewrite It In Rust)
-    ripgrep             # 宇宙最快純文字搜尋引擎，Neovim/Telescope 核心
-    fd                  # 簡單、快速且預設忽略 gitignore 的尋找工具
-    dust                # 用直觀樹狀圖與百分比顯示硬碟佔用的工具
-    procs               # 支援彩色輸出與 Port 查詢的現代化進程檢視器
-    tokei               # 毫秒級程式碼行數與語言佔比統計工具
-    hyperfine           # 命令行基準測試 (Benchmark) 神器，資工效能調校必備
+    ripgrep             # 宇宙最快純文字搜尋引擎
+    fd                  # 簡單、快速的尋找工具
+    dust                # 樹狀圖顯示硬碟佔用
+    procs               # 現代化進程檢視器
+    tokei               # 程式碼行數與語言佔比統計
+    hyperfine           # 命令行基準測試神器
     delta               # 帶有語法高亮與行號的極美 Git Diff 工具
 
     # 📝 學術論文與開發必備
     tectonic            # 基於 Rust 的自給自足式 LaTeX 引擎
     lazygit             # 終端機裡的 Git 圖形化整合介面
-    ghostty             # 現代化、支援 GPU 加速的頂級終端機
+    # ghostty 已經物理移交至 programs.ghostty 模組託管，此處安全隱藏
     gnumake             # 傳統 GNU Make 編譯工具
     gcc                 # GNU 語言編譯器套件 (C/C++)
 
@@ -49,32 +48,32 @@
     rustc               # Rust 核心編譯器
     cargo               # Rust 套件管理器
     rustfmt             # Rust 程式碼格式化工具
-    clippy              # Rust 靜態代碼分析 (Linter) 工具
+    clippy              # Rust 靜態代碼分析工具
     temurin-bin-21      # Java 21 執行期環境 (JDK)
     python3             # Python 3 執行期環境
-    pnpm                # 現代化、極速且節省空間 of Node.js 包管理器
+    pnpm                # 現代化、極速且節省空間的 Node.js 包管理器
 
     # 🗃️ 終端工作流與 Yazi 預覽增強
-    tmux                # 終端機複用器 (Terminal Multiplexer)
-    ffmpegthumbnailer   # 影片縮圖生成器 (供 yazi 預覽影片使用)
-    poppler-utils       # PDF 渲染工具套件 (提供 pdftoppm 供 yazi 預覽 PDF)
+    tmux                # 終端機複用器
+    ffmpegthumbnailer   # 影片縮圖生成器
+    poppler-utils       # PDF 渲染工具套件
 
-    # 📡 網路傳輸與遠端掛載
-    aria2               # 極速、輕量化的多協定下載工具 (支援 BT/HTTP)
-    rsync               # 經典的遠端與本地檔案快速同步工具
-    sshfs               # 透過 SSH 將遠端目錄掛載至地端的檔案系統
+    # 📡 網路傳傳輸與遠端掛載
+    aria2               # 多協定下載工具
+    rsync               # 本地檔案快速同步工具
+    sshfs               # 透過 SSH 掛載遠端目錄
 
     # 🖥️ 視窗管理與螢幕擷取 (Sway / Wayland 生態)
-    grim                # Wayland 截圖工具 (抓取畫面)
-    slurp               # Wayland 區域選取工具 (配合 grim 擷取特定區域)
-    swaybg              # Wayland 桌布設定工具
+    grim                # Wayland 截圖工具
+    slurp               # Wayland 區域選取工具
+    brightnessctl       # 筆電螢幕亮度物理調度工具
     networkmanagerapplet
     hicolor-icon-theme
-    wlogout             # 🎯 物理替代 swaynag 的高雅 Wayland 電源選單
-    swaylock            # 🎯 補上這個，Lock 按鈕才動得起來
+    wlogout             # 高雅 Wayland 電源選單
+    swaylock            # Lock 按鈕實體依賴
 
     # 🎯 藍牙管理 GUI 核心組件
-    blueman             # 🎯 提供藍牙管理面板與常駐系統托盤
+    blueman             # 藍牙管理面板與常駐系統托盤
 
     # 🎯 裝置管理員 GUI 雙子星
     hardinfo2           # 經典樹狀裝置管理員
@@ -87,16 +86,16 @@
 
     # 🎯 極輕量 GUI 檔案管理
     thunar
-    tumbler             # 👈 強烈建議加裝這個！這是 Thunar 的圖片縮圖生成引擎
+    tumbler             # Thunar 的圖片縮圖生成引擎
 
     # 🎯 現代化音效調度刀組 (PipeWire 體系)
     pavucontrol         # GUI 音效主控台
     pulsemixer          # TUI 終端機音量調節器
-    pasystray           # 系統托盤音效管理員 (支援右鍵秒切輸出裝置)
+    pasystray           # 系統托盤音效管理員
 
     # 🎯 檔案與剪貼簿臨時置物架防線
     copyq
-    wl-clipboard        # 👈 Wayland 底層剪貼簿後端，CopyQ 抓取檔案路徑的實體依賴
+    wl-clipboard        # Wayland 底層剪貼簿後端
 
     # 🎯 即時通訊軟體區
     telegram-desktop
@@ -104,26 +103,34 @@
 
     # 🖨️ 印表機和掃描器
     simple-scan           # GNOME 家族的極簡掃描器
-    system-config-printer # 傳統的 GTK3 印表機管理面板，方便點擊新增
+    system-config-printer # 傳統的 GTK3 印表機管理面板
 
     # 螢幕管理
-    wlr-randr            # CLI螢幕管理
-    wdisplays            # 🖥️ Sway/Wayland 專用圖形化螢幕管理面板 (滑鼠拖曳排列、動態解析度)
+    wlr-randr            # CLI 螢幕管理
+    wdisplays            # Sway/Wayland 專用圖形化螢幕管理面板
 
     # 🎯 Wayland 專屬輕量通知守護進程
     mako
 
-    # 📦 個人專屬解壓縮兵器庫 (Compression & Archiving Suite)
-    p7zip           # 萬能的 7z 核心，效能極高
-    zip             # 標準 zip 壓縮工具
-    unzip           # 解 zip 專用老將
-    unrar           # 物理超渡 rar 檔案
-    zstd            # 現代最速壓縮協議（Facebook 開發）
-    file-roller     # 🎯 物理呼叫中心：極輕量 GTK 解壓縮總管
+    # 📦 個人專屬解壓縮兵器庫
+    p7zip               # 萬能的 7z 核心
+    zip                 # 標準 zip 壓縮工具
+    unzip               # 解 zip 專用老將
+    unrar               # 物理超渡 rar 檔案
+    zstd                # 現代最速壓縮協議
+    file-roller         # 極輕量 GTK 解壓縮總管
 
     # 🎨 Wayland 頂級動態桌布後台與滑鼠點選 GUI 前端
-    swww
+    awww
     waypaper
+
+    # PDF 軟體
+    kdePackages.okular
+    zathura
+    xdotool             # 焦點彈回實體依賴
+
+    # 📦 隔離污染源專用沙盒
+    distrobox
   ];
 
   # ----------------------------------------------------------------------------
@@ -138,7 +145,6 @@
     shellAliases = {
       ll   = "ls -l";
       g    = "git";
-      # 🎯 終極防線：讀取本地環境變數 $NIX_PROFILE，若無設定則預設以 pve-profile 安全配置
       nr   = "git add -A && sudo nixos-rebuild switch --flake ~/.config/nixos/#\${NIX_PROFILE:-pve-profile} && exec zsh";
       nxc  = "sudo nix-collect-garbage --delete-old";
       nxcg = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
@@ -147,11 +153,9 @@
       top  = "btm";
       aria = "aria2c";
       y    = "yazi";
-      # 🔌 隨身碟 CLI 極速掛載武器庫
       mn   = "udisksctl mount -b";
       umn  = "udisksctl unmount -b";
       poff = "udisksctl power-off -b";
-      # 🛰️ 一槍清點全系統被 direnv 列管的黃金地段
       dls  = "head -n 1 ~/.local/share/direnv/allow/* 2>/dev/null";
     };
 
@@ -165,16 +169,31 @@
     };
   };
 
+  # ----------------------------------------------------------------------------
+  # 💻 Ghostty 終端機專屬字型防線
+  # ----------------------------------------------------------------------------
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      font-family = "JetBrainsMono Nerd Font";
+      font-size = 11;
+
+      # 🎯 修正主題名稱字串：改為官方指定的大寫空格 Title Case
+      theme = "Catppuccin Macchiato";
+      window-padding-x = 12;
+      window-padding-y = 12;
+      window-decoration = false;
+    };
+  };
+
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true; # 🎯 自動幫您在 Zsh 注入 hook
-    options = [
-      "--cmd cd"                 # 🎯 物理劫持傳統的 cd 命令
-    ];
+    enableZshIntegration = true;
+    options = [ "--cmd cd" ];
   };
 
   # ----------------------------------------------------------------------------
-  # 🎨 SECTION 5: Starship 現代化跨 Shell 提示字元（Prompt）設定
+  # 🎨 SECTION 5: Starship 現代化跨 Shell 提示字元設定
   # ----------------------------------------------------------------------------
   programs.starship = {
     enable = true;
@@ -296,13 +315,10 @@
         name = "Jimmy Ming-Tai Wu";
         email = "wmt@wmt35.idv.tw";
       };
-      # 🎯 告訴 Git 引擎：我們不要用 GPG，改用 SSH 格式簽署
-      gpg.format = "ssh";
+        gpg.format = "ssh";
     };
-
-    # 🔐 現代化 SSH 簽署防線
     signing = {
-      key = "~/.ssh/id_ed25519.pub"; # 🎯 指向您本機的 SSH 公鑰路徑
+      key = "~/.ssh/id_ed25519.pub";
       signByDefault = true;
     };
   };
@@ -310,22 +326,15 @@
   # ----------------------------------------------------------------------------
   # 🖥️ SECTION 8: Wayland 視窗管理 (Sway, Waybar & GTK)
   # ----------------------------------------------------------------------------
-  services.network-manager-applet.enable = true; # Sway 網路狀態欄位
+  services.network-manager-applet.enable = true;
 
-  # 🎨 完美的 GTK 視覺防線（解決 nm-applet 與 blueman-applet 圖示遺失問題）
   gtk = {
     enable = true;
-    iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
-    };
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
+    iconTheme = { name = "Adwaita"; package = pkgs.adwaita-icon-theme; };
+    theme = { name = "Adwaita-dark"; package = pkgs.gnome-themes-extra; };
   };
 
-  # 📊 Waybar 頂部狀態列
+  # 📊 Waybar 頂部狀態列設定
   programs.waybar = {
     enable = true;
     systemd = {
@@ -334,13 +343,10 @@
     };
     settings = [{
       layer = "top"; position = "top"; height = 34; spacing = 8;
-      # 🎯 任務欄（wlr/taskbar）注入左側，緊跟在工作區（workspaces）後面
       modules-left = [ "sway/workspaces" "wlr/taskbar" ];
       modules-right = [ "cpu" "memory" "temperature" "tray" "clock" "custom/power" ];
 
       "sway/workspaces" = { disable-scroll = true; all-outputs = true; format = "{name}"; };
-
-      # 🎯 任務欄行為配置：支援圖示與標題、點擊切換、中鍵關閉
       "wlr/taskbar" = {
         format = "{icon} {title}";
         icon-size = 16;
@@ -349,94 +355,61 @@
         on-click = "activate";
         on-click-middle = "close";
       };
-
       clock = { format = "{:%H:%M  |  %m/%d}"; tooltip-format = "<tt><small>{calendar}</small></tt>"; };
       cpu = { format = "CPU: {usage}%"; };
       memory = { format = "RAM: {used:0.1f}G"; };
       temperature = { critical-threshold = 75; format = "{temperatureC}°C"; };
-
-      "custom/power" = {
-        format = "⏻";
-        tooltip = false;
-        on-click = "wlogout";
-      };
+      "custom/power" = { format = "⏻"; tooltip = false; on-click = "wlogout"; };
     }];
     style = ''
       * {
-        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC", sans-serif;
         font-size: 13px;
         font-weight: 600;
         border: none;
         border-radius: 0;
       }
 
-      window#waybar {
-        background-color: transparent;
-      }
+      window#waybar { background-color: transparent; }
 
       #workspaces button {
-        padding: 0 10px;
-        margin: 4px 2px;
-        background-color: rgba(30, 30, 46, 0.7);
-        color: #cdd6f4;
+        padding: 0 10px; margin: 4px 2px;
+        background-color: rgba(30, 30, 46, 0.7); color: #cdd6f4;
         border-radius: 6px;
       }
 
-      #workspaces button.focused {
-        background-color: #ca9ee6;
-        color: #1e1e2e;
-      }
+      #workspaces button.focused { background-color: #ca9ee6; color: #1e1e2e; }
 
       #clock {
-        font-family: "JetBrainsMono Nerd Font";
-        padding: 0 16px;
-        margin: 4px 0;
-        background-color: rgba(30, 30, 46, 0.85);
-        color: #f2cdcd;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        /* 🎯 修正：同步修正 Clock 的第一順位字型 */
+        font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font";
+        padding: 0 16px; margin: 4px 0;
+        background-color: rgba(30, 30, 46, 0.85); color: #f2cdcd;
+        border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
-      #cpu { color: #89b4fa; }
-      #memory { color: #a6e3a1; }
-      #temperature { color: #eba0ac; }
-
-      #tray {
-        margin-right: 12px;
-        padding: 0 6px;
-      }
+      #cpu { font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font"; color: #89b4fa; }
+      #memory { font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font"; color: #a6e3a1; }
+      #temperature { font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font"; color: #eba0ac; }
+      #tray { font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font"; margin-right: 12px; padding: 0 6px; }
 
       #custom-power {
-        color: #f38ba8;
-        font-size: 14px;
-        padding: 0 12px;
-        margin: 4px 4px;
-        background-color: rgba(243, 139, 168, 0.15);
-        border-radius: 6px;
+        color: #f38ba8; font-size: 14px; padding: 0 12px; margin: 4px 4px;
+        background-color: rgba(243, 139, 168, 0.15); border-radius: 6px;
       }
+      #custom-power:hover { background-color: rgba(243, 139, 168, 0.3); }
 
-      #custom-power:hover {
-        background-color: rgba(243, 139, 168, 0.3);
-      }
-
-      /* 🎯 任務欄樣式配置：使當前作用中的 App 高亮發光 */
       #taskbar button {
-        padding: 0 10px;
-        margin: 4px 2px;
-        background-color: rgba(49, 50, 68, 0.4);
-        color: #cdd6f4;
+        font-family: "JetBrainsMono Nerd Font";
+        font-weight: 500; /* 可以微調字重，讓它在工作列看起來更俐落 */
+        padding: 0 10px; margin: 4px 2px;
+        background-color: rgba(49, 50, 68, 0.4); color: #cdd6f4;
         border-radius: 6px;
       }
-
       #taskbar button.active {
-        background-color: rgba(202, 158, 230, 0.4);
-        color: #ca9ee6;
+        background-color: rgba(202, 158, 230, 0.4); color: #ca9ee6;
         border: 1px solid rgba(202, 158, 230, 0.6);
       }
-
-      #taskbar button:hover {
-        background-color: rgba(202, 158, 230, 0.2);
-      }
+      #taskbar button:hover { background-color: rgba(202, 158, 230, 0.2); }
     '';
   };
 
@@ -447,6 +420,13 @@
       modifier = "Mod4";
       terminal = "ghostty";
       menu = "wofi --show drun";
+
+      fonts = {
+        names = [ "JetBrainsMono Nerd Font" ];
+        style = "Regular";
+        size = 11.0;
+      };
+
       keybindings = let mod = modifier; in pkgs.lib.mkOptionDefault {
         "${mod}+Return" = "exec ${terminal}";
         "${mod}+d" = "exec ${menu}";
@@ -458,114 +438,66 @@
         "${mod}+w" = "layout tabbed";
         "${mod}+m" = "fullscreen toggle";
         "${mod}+Shift+space" = "floating toggle";
-        "${mod}+h" = "focus left";
-        "${mod}+j" = "focus down";
-        "${mod}+k" = "focus up";
-        "${mod}+l" = "focus right";
-        "${mod}+Shift+h" = "move left";
-        "${mod}+Shift+j" = "move down";
-        "${mod}+Shift+k" = "move up";
-        "${mod}+Shift+l" = "move right";
+        "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
+        "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
         "${mod}+c" = "exec copyq toggle";
+
+        "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
+        "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
+        "XF86AudioMute"        = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        "XF86MonBrightnessUp"   = "exec brightnessctl set 5%+";
+        "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
       };
 
-      # 滑鼠與觸控板硬體配置
       input = {
-        "type:pointer" = {
-          natural_scroll = "enabled"; # 修正拼字：確保自然捲動正常
-          accel_profile = "flat";     # 關閉滑鼠加速，確保一對一線性手感
-          pointer_accel = "0.6";
-        };
-        "type:touchpad" = {
-          natural_scroll = "enabled";
-          tap = "enabled";
-          middle_emulation = "enabled";
-        };
+        "type:pointer" = { natural_scroll = "enabled"; accel_profile = "flat"; pointer_accel = "0.6"; };
+        "type:touchpad" = { natural_scroll = "enabled"; tap = "enabled"; middle_emulation = "enabled"; };
       };
 
       startup = [
-        # 啟動 Fcitx5，使用 --replace 確保能無縫劫持輸入法焦點
         { command = "fcitx5 -d --replace"; always = true; }
-        { command = "swaybg -i ${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath} -m fill"; always = true; }
-        # 🎯 確保藍牙托盤開機通電並精準掛載至 Waybar Tray
+        { command = "awww-daemon & sleep 0.5 && waypaper --restore"; always = true; }
         { command = "blueman-applet"; always = true; }
-        # 音訊系統托盤
         { command = "pasystray"; always = true; }
-        # 剪貼板管理
         { command = "copyq"; always = true; }
-        # 通知守護進程
         { command = "mako"; always = true; }
-        # 啟動 swww 守護進程
-        { command = "swww-daemon"; always = true; }
-
       ];
 
-      bars = [ ]; # 物理遮蔽 Sway 內建狀態列
+      bars = [ ];
 
-      # 🎯 空間劃分防線：指定特定應用程式的轉生工作區
       assigns = {
-        "2" = [
-          { app_id = "^org\\.telegram\\.desktop$"; }
-          { app_id = "^io\\.github\\.tobagin\\.karere$"; }
-        ];
+        "2" = [ { app_id = "^org\\.telegram\\.desktop$"; } { app_id = "^io\\.github\\.tobagin\\.karere$"; } ];
       };
 
-      # 🎯 LINE 雙核心防線：主視窗自由浮動 + 匿名通知物理外包
       window.commands = [
-        # 條款 1：精準攔截 LINE 主視窗（標題完全等於 LINE），強制浮動，保留邊框與縮放自由
-        {
-          command = "floating enable";
-          criteria = { title = "^LINE$"; };
-        }
-        # 條款 2：精準狙擊 Chrome 噴出的無名通知（app_id 與 title 皆為空），強制浮動並推至右上角
-        {
-          command = "floating enable, border none, move position 85 ppt 3 ppt";
-          criteria = { app_id = "^$"; title = "^$"; };
-        }
-
-        # 🎯 條款 3：精準定製 CopyQ 懸浮置物架
-        {
-          command = "floating enable, resize set 400 px 900 px, move position 75 ppt 5 ppt";
-          criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; };
-        }
-
-        # 🎯 條款 4：精準捕捉 Telegram 與 Karere，強制浮動並給予自由
-        {
-          command = "floating enable";
-          criteria = { app_id = "^(org\\.telegram\\.desktop|io\\.github\\.tobagin\\.karere)$"; };
-        }
-
-        # 🎯 條款 5：精準捕捉 GTK 解壓縮總管，強迫其以懸浮姿態降臨，不切割主畫面
-        {
-          command = "floating enable";
-          criteria = { app_id = "^org\\.gnome\\.FileRoller$"; };
-        }
-
-        {
-          command = "floating enable, resize set 1000 700, move position center";
-          criteria = { app_id = "wdisplays"; };
-        }
-        {
-          # 🎯 桌布管理器：一遞交名片就自動浮動定錨 1100x750 並居中
-          command = "floating enable, resize set 1100 750, move position center";
-          criteria = { app_id = "waypaper"; };
-        }
+        { command = "floating enable"; criteria = { title = "^LINE$"; }; }
+        { command = "floating enable, border none, move position 85 ppt 3 ppt"; criteria = { app_id = "^$"; title = "^$"; }; }
+        { command = "floating enable, resize set 400 px 900 px, move position 75 ppt 5 ppt"; criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; }; }
+        { command = "floating enable"; criteria = { app_id = "^(org\\.telegram\\.desktop|io\\.github\\.tobagin\\.karere)$"; }; }
+        { command = "floating enable"; criteria = { app_id = "^org\\.gnome\\.FileRoller$"; }; }
+        { command = "floating enable, resize set 1000 700, move position center"; criteria = { app_id = "wdisplays"; }; }
+        { command = "floating enable, resize set 1100 750, move position center"; criteria = { app_id = "waypaper"; }; }
       ];
     };
-    # 在 config 大括號外面，精準追加這段「拒絕奪焦」防線
     extraConfig = ''
-      # 🔐 終極防打擾：當無名通知（app_id 與 title 皆為空）誕生時，絕對不准搶奪游標焦點！
       no_focus [app_id="^$" title="^$"]
     '';
+  };
+
+  # 🌐 XDG Desktop Portal 總線防線
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+    config = { sway = { default = [ "wlr" ]; }; };
   };
 
   # 🎯 Mako 通知美學宣告防線：Catppuccin Macchiato 風格
   services.mako = {
     enable = true;
 
-    # 💡 所有視覺外觀屬性全面收納至 settings 中，並改為中劃線命名
+    # 💡 順應 26.05 新模組規範，並精準修正為 LINE Seed TW_TTF 字型真名
     settings = {
-      font = "JetBrainsMono Nerd Font 10";
+      font = "LINE Seed TW_TTF,JetBrainsMono Nerd Font Regular 10";
       background-color = "#24273add";  # 內斂的摩卡深藍
       text-color = "#cad3f5";          # 粉白文字
       border-color = "#8aadf4";        # 科技感淡藍邊框
@@ -580,64 +512,35 @@
   # ----------------------------------------------------------------------------
   # 🎨 SECTION 9: 應用程式啟動與關機選單自訂 (Wofi & Wlogout)
   # ----------------------------------------------------------------------------
-  # 🎩 Wofi 啟動器
+  # 🎩 Wofi 啟動器設定
   programs.wofi = {
     enable = true;
     settings = {
-      show = "drun";
-      width = 600;
-      height = 400;
-      always_parse_args = true;
-      show_indicators = true;
-      insensitive = true;
-      allow_images = true;
-      image_size = 28;
+      show = "drun"; width = 600; height = 400; always_parse_args = true;
+      show_indicators = true; insensitive = true; allow_images = true; image_size = 28;
       prompt = "搜尋應用程式...";
     };
     style = ''
       window {
-        font-family: "JetBrainsMono Nerd Font", "Noto Sans CJK TC", sans-serif;
+        /* 🎯 修正：將 CSS 內字型更正為 LINE Seed TW_TTF */
+        font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font", sans-serif;
         font-size: 14px;
-        background-color: rgba(30, 30, 46, 0.85);
-        color: #cdd6f4;
-        border: 2px solid rgba(202, 158, 230, 0.3);
-        border-radius: 12px;
+        background-color: rgba(30, 30, 46, 0.85); color: #cdd6f4;
+        border: 2px solid rgba(202, 158, 230, 0.3); border-radius: 12px;
       }
 
       #outer-box { padding: 15px; }
-
       #input {
-        background-color: rgba(49, 50, 68, 0.5);
-        color: #cdd6f4;
-        border: 1px solid rgba(202, 158, 230, 0.2);
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin-bottom: 10px;
+        background-color: rgba(49, 50, 68, 0.5); color: #cdd6f4;
+        border: 1px solid rgba(202, 158, 230, 0.2); border-radius: 8px;
+        padding: 8px 12px; margin-bottom: 10px;
       }
-
-      #input:focus {
-        border-color: #ca9ee6;
-        box-shadow: 0 0 4px rgba(202, 158, 230, 0.5);
-      }
-
+      #input:focus { border-color: #ca9ee6; box-shadow: 0 0 4px rgba(202, 158, 230, 0.5); }
       #scroll { margin-top: 5px; }
       #text { color: #cdd6f4; margin-left: 10px; }
-
-      #entry {
-        padding: 8px;
-        border-radius: 8px;
-        transition: all 0.1s ease-in-out;
-      }
-
-      #entry:selected {
-        background-color: rgba(202, 158, 230, 0.3);
-        outline: none;
-      }
-
-      #entry:selected #text {
-        color: #ca9ee6;
-        font-weight: bold;
-      }
+      #entry { padding: 8px; border-radius: 8px; transition: all 0.1s ease-in-out; }
+      #entry:selected { background-color: rgba(202, 158, 230, 0.3); outline: none; }
+      #entry:selected #text { color: #ca9ee6; font-weight: bold; }
     '';
   };
 
@@ -653,25 +556,16 @@
       { label = "reboot"; action = "systemctl reboot"; text = "Reboot"; keybind = "r"; }
     ];
     style = ''
-      * { background-image: none; box-shadow: none; }
+      /* 🎯 修正：更正 wlogout 內部渲染字型為 LINE Seed TW_TTF */
+      * { background-image: none; box-shadow: none; font-family: "LINE Seed TW_TTF", sans-serif; }
       window { background-color: rgba(30, 30, 46, 0.85); }
       button, button:focus {
-        background-color: rgba(49, 50, 68, 0.5);
-        color: #cdd6f4;
-        border: 2px solid rgba(202, 158, 230, 0.2);
-        border-radius: 12px;
-        margin: 15px;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 25%;
-        transition: all 0.2s ease-in-out;
-        outline: none;
+        background-color: rgba(49, 50, 68, 0.5); color: #cdd6f4;
+        border: 2px solid rgba(202, 158, 230, 0.2); border-radius: 12px;
+        margin: 15px; background-repeat: no-repeat; background-position: center;
+        background-size: 25%; transition: all 0.2s ease-in-out; outline: none;
       }
-      button:active, button:hover {
-        background-color: rgba(202, 158, 230, 0.3);
-        border-color: #ca9ee6;
-        color: #1e1e2e;
-      }
+      button:active, button:hover { background-color: rgba(202, 158, 230, 0.3); border-color: #ca9ee6; color: #1e1e2e; }
       #lock { background-image: url("${pkgs.wlogout}/share/wlogout/icons/lock.png"); }
       #logout { background-image: url("${pkgs.wlogout}/share/wlogout/icons/logout.png"); }
       #suspend { background-image: url("${pkgs.wlogout}/share/wlogout/icons/suspend.png"); }
@@ -699,6 +593,14 @@
   programs.ssh = {
     enableDefaultConfig = false;
     settings."*" = { Compression = "yes"; ServerAliveInterval = 60; };
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/pdf" = [ "org.kde.okular.desktop" ];
+      "inode/directory" = [ "thunar.desktop" ];
+    };
   };
 
   # ----------------------------------------------------------------------------

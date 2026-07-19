@@ -100,6 +100,11 @@
       nerd-fonts.symbols-only # 🎯 終極圖示救星：只抓符號不抓整套大字型，最省空間且 100% 覆蓋所有 Nerd Font 符號
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
+      # 置入本機字型
+      (runCommand "line-seed-tw" {} ''
+        mkdir -p $out/share/fonts/truetype
+        cp -r ${./fonts/TTF}/*.ttf $out/share/fonts/truetype/
+      '')
     ];
     fontconfig = {
       defaultFonts = {
@@ -191,6 +196,18 @@
   hardware.sane = {
     enable = true;
     extraBackends = [ pkgs.sane-airscan ];
+  };
+
+  # 在 NixOS 系統配置中啟用智慧卡底層服務
+  services.pcscd.enable = true;
+
+  # ----------------------------------------------------------------------------
+  # 📦️ SECTION 14: 在 NixOS 系統層啟用 Podman 核心引擎
+  # ----------------------------------------------------------------------------
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;                         # 自動建立 docker 別名，相容傳統指令
+    defaultNetwork.settings.dns_enabled = true;  # 確保容器間的 DNS 解析正常運作
   };
 
   system.stateVersion = "26.05";
