@@ -71,6 +71,7 @@
     hicolor-icon-theme
     wlogout             # 高雅 Wayland 電源選單
     swaylock            # Lock 按鈕實體依賴
+    swayidel            # Idel 按鈕實體依賴
     nwg-drawer          # 全螢幕圖形化 App 啟動抽屜
 
     # 🎯 藍牙管理 GUI 核心組件

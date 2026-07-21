@@ -94,12 +94,15 @@
   # 𔔁 SECTION 10: 現代化 Nerd Fonts 字型與圖示全域補全 (Fonts Infrastructure)
   # ----------------------------------------------------------------------------
   fonts = {
+    fontDir.enable = true;
+
     packages = with pkgs; [
       font-awesome # 🎯 Waybar 常用圖示庫
       noto-fonts-cjk-sans
       nerd-fonts.symbols-only # 🎯 終極圖示救星：只抓符號不抓整套大字型，最省空間且 100% 覆蓋所有 Nerd Font 符號
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
+      liberation_ttf
       # 置入本機字型
       (runCommand "line-seed-tw" {} ''
         mkdir -p $out/share/fonts/truetype
