@@ -61,7 +61,7 @@
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # 開放 Steam 遠端串流
-    gamescopeSession.enable = true; # 🔥 關鍵：直接為 GDM 齒輪註冊「Steam 大螢幕模式」入口
+    # gamescopeSession.enable = true; # 🔥 關鍵：直接為 GDM 齒輪註冊「Steam 大螢幕模式」入口
 
     # 🎯 將 MangoHud 與 GameMode 塞入 Steam 的 FHS 運行沙盒
     extraPackages = with pkgs; [

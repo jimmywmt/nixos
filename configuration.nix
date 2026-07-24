@@ -99,9 +99,11 @@
     packages = with pkgs; [
       font-awesome # 🎯 Waybar 常用圖示庫
       noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
       nerd-fonts.symbols-only # 🎯 終極圖示救星：只抓符號不抓整套大字型，最省空間且 100% 覆蓋所有 Nerd Font 符號
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
+      corefonts
       liberation_ttf
       # 置入本機字型
       (runCommand "line-seed-tw" {} ''

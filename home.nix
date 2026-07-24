@@ -71,7 +71,7 @@
     hicolor-icon-theme
     wlogout             # 高雅 Wayland 電源選單
     swaylock            # Lock 按鈕實體依賴
-    swayidel            # Idel 按鈕實體依賴
+    swayidle            # Idle 按鈕實體依賴
     nwg-drawer          # 全螢幕圖形化 App 啟動抽屜
 
     # 🎯 藍牙管理 GUI 核心組件
@@ -136,6 +136,8 @@
 
     # 📄️ 文書處理
     onlyoffice-desktopeditors
+
+    yt-dlp              # 讓 MPV 可以直接把 YouTube / Bilibili 網址拖進去播 4K 串流
   ];
 
   # ----------------------------------------------------------------------------
@@ -483,6 +485,7 @@
         { command = "floating enable"; criteria = { app_id = "^org\\.gnome\\.FileRoller$"; }; }
         { command = "floating enable, resize set 1000 700, move position center"; criteria = { app_id = "wdisplays"; }; }
         { command = "floating enable, resize set 1100 750, move position center"; criteria = { app_id = "waypaper"; }; }
+        { command = "floating enable"; criteria = { title = "音量控制"; }; }
       ];
     };
     extraConfig = ''
@@ -650,6 +653,49 @@
     defaultApplications = {
       "application/pdf" = [ "org.kde.okular.desktop" ];
       "inode/directory" = [ "thunar.desktop" ];
+    };
+  };
+
+  programs.mpv = {
+    enable = true;
+
+    # 🎯 核心外掛矩陣：Home Manager 會自動幫您處理載入與路徑鏈結
+    scripts = with pkgs.mpvScripts; [
+      uosc      # 👑 現代化動態 UI / 雙語字幕選單 / 控制面板
+      thumbfast # 📸 懸停時間軸時顯示影片實體縮圖（uosc 必備靈魂）
+      mpris     # 🎵 打通 D-Bus，讓 Waybar 或鍵盤媒體鍵能控制 MPV 播放
+    ];
+
+    # ⚙️ mpv.conf 設定：寫成結構化 Attrset，Home Manager 會自動轉譯成標準 mpv.conf
+    config = {
+      # 🚀 Sway / Wayland 硬體加速極致優化
+      vo = "gpu-next";
+      gpu-context = "wayland";
+      hwdec = "auto-safe";      # 自動開啟獨立顯卡（AMD/NVIDIA）硬體解碼
+
+      # 🎨 視覺邊框極簡化（把 UI 完全交給 uosc 渲染）
+      osd-bar = "no";
+      border = "no";
+
+      # 💬 字幕與音軌語言優先權
+      slang = "cht,zh-TW,zh,eng"; # 優先載入繁體中文字幕
+      alang = "jpn,eng,zh";       # 優先載入日文/英文原音
+      sub-auto = "fuzzy";         # 模糊比對同目錄下的字幕檔
+
+      # 螢幕保持常亮（配合 Sway 避免看影片時進入睡眠）
+      keep-open = "yes";
+    };
+
+    # 🎛️ uosc 專屬微調 (自動轉譯為 ~/.config/mpv/script-opts/uosc.conf)
+    scriptOpts = {
+      uosc = {
+        # 時間軸進度條風格 ("line", "bar", "compact")
+        timeline_style = "bar";
+        # 控制按鈕與音量選單呈現型態
+        volume_control = "hover";
+        # 自動隱藏介面的延遲毫秒數
+        autohide_delay = 2000;
+      };
     };
   };
 
