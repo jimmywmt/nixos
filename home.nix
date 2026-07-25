@@ -39,7 +39,6 @@
     # 📝 學術論文與開發必備
     tectonic            # 基於 Rust 的自給自足式 LaTeX 引擎
     lazygit             # 終端機裡的 Git 圖形化整合介面
-    # ghostty 已經物理移交至 programs.ghostty 模組託管，此處安全隱藏
     gnumake             # 傳統 GNU Make 編譯工具
     gcc                 # GNU 語言編譯器套件 (C/C++)
 
@@ -58,12 +57,15 @@
     ffmpegthumbnailer   # 影片縮圖生成器
     poppler-utils       # PDF 渲染工具套件
 
-    # 📡 網路傳傳輸與遠端掛載
+    # 📡 網路傳輸與遠端掛載
     aria2               # 多協定下載工具
     rsync               # 本地檔案快速同步工具
     sshfs               # 透過 SSH 掛載遠端目錄
 
     # 🖥️ 視窗管理與螢幕擷取 (Sway / Wayland 生態)
+    cliphist            # 專為 Wayland 打造的極輕量 SQLite 剪貼簿後端
+    wl-clipboard        # Wayland 底層剪貼簿後端
+    dragon-drop         # 🐉 Linux 界神級暫存拖曳工具 (Yoink 核心)
     grim                # Wayland 截圖工具
     slurp               # Wayland 區域選取工具
     brightnessctl       # 筆電螢幕亮度物理調度工具
@@ -74,14 +76,10 @@
     swayidle            # Idle 按鈕實體依賴
     nwg-drawer          # 全螢幕圖形化 App 啟動抽屜
 
-    # 🎯 藍牙管理 GUI 核心組件
+    # 🎯 藍牙與硬體檢視 GUI
     blueman             # 藍牙管理面板與常駐系統托盤
-
-    # 🎯 裝置管理員 GUI 雙子星
     hardinfo2           # 經典樹狀裝置管理員
     cpu-x               # 現代化 CPU-Z 複刻版
-
-    # 🎯 現代化 CLI 硬體檢視器
     fastfetch           # 極速系統總覽
     pciutils            # 提供 lspci
     usbutils            # 提供 lsusb
@@ -95,21 +93,17 @@
     pulsemixer          # TUI 終端機音量調節器
     pasystray           # 系統托盤音效管理員
 
-    # 🎯 檔案與剪貼簿臨時置物架防線
-    copyq
-    wl-clipboard        # Wayland 底層剪貼簿後端
-
     # 🎯 即時通訊軟體區
     telegram-desktop
     karere
 
     # 🖨️ 印表機和掃描器
-    simple-scan           # GNOME 家族的極簡掃描器
+    simple-scan         # GNOME 家族的極簡掃描器
     system-config-printer # 傳統的 GTK3 印表機管理面板
 
     # 螢幕管理
-    wlr-randr            # CLI 螢幕管理
-    wdisplays            # Sway/Wayland 專用圖形化螢幕管理面板
+    wlr-randr           # CLI 螢幕管理
+    wdisplays           # Sway/Wayland 專用圖形化螢幕管理面板
 
     # 🎯 Wayland 專屬輕量通知守護進程
     mako
@@ -122,7 +116,7 @@
     zstd                # 現代最速壓縮協議
     file-roller         # 極輕量 GTK 解壓縮總管
 
-    # 🎨 Wayland 頂級動態桌布後台與滑鼠點選 GUI 前端
+    # 🎨 Wayland 頂級動態桌布後台與 GUI 前端
     awww
     waypaper
 
@@ -134,14 +128,17 @@
     # 📦 隔離污染源專用沙盒
     distrobox
 
-    # 📄️ 文書處理
+    # 📄 文書處理與媒體工具
     onlyoffice-desktopeditors
+    yt-dlp              # MPV 4K 網址串流擴充
 
-    yt-dlp              # 讓 MPV 可以直接把 YouTube / Bilibili 網址拖進去播 4K 串流
+    # 🖥️ 計算機引擎
+    libqalculate
+    qalculate-gtk
   ];
 
   # ----------------------------------------------------------------------------
-  # 🐚 SECTION 4: Zsh 終端 Shell 與 Antidote 外掛管理機制
+  # 🐚 SECTION 4: Zsh 終端 Shell 與 CLI 工具鏈
   # ----------------------------------------------------------------------------
   programs.zsh = {
     enable = true;
@@ -163,7 +160,7 @@
       mn   = "udisksctl mount -b";
       umn  = "udisksctl unmount -b";
       poff = "udisksctl power-off -b";
-      dls  = "head -n 1 ~/.local/share/direnv/allow/* 2>/dev/null";
+      ch-clear = "cliphist wipe";
     };
 
     antidote = {
@@ -177,15 +174,13 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 💻 Ghostty 終端機專屬字型防線
+  # 💻 Ghostty 終端機與 Terminal 工具鏈
   # ----------------------------------------------------------------------------
   programs.ghostty = {
     enable = true;
     settings = {
       font-family = "JetBrainsMono Nerd Font";
       font-size = 11;
-
-      # 🎯 修正主題名稱字串：改為官方指定的大寫空格 Title Case
       theme = "Catppuccin Macchiato";
       window-padding-x = 12;
       window-padding-y = 12;
@@ -322,7 +317,7 @@
         name = "Jimmy Ming-Tai Wu";
         email = "wmt@wmt35.idv.tw";
       };
-        gpg.format = "ssh";
+      gpg.format = "ssh";
     };
     signing = {
       key = "~/.ssh/id_ed25519.pub";
@@ -387,7 +382,6 @@
       #workspaces button.focused { background-color: #ca9ee6; color: #1e1e2e; }
 
       #clock {
-        /* 🎯 修正：同步修正 Clock 的第一順位字型 */
         font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font";
         padding: 0 16px; margin: 4px 0;
         background-color: rgba(30, 30, 46, 0.85); color: #f2cdcd;
@@ -407,7 +401,7 @@
 
       #taskbar button {
         font-family: "JetBrainsMono Nerd Font";
-        font-weight: 500; /* 可以微調字重，讓它在工作列看起來更俐落 */
+        font-weight: 500;
         padding: 0 10px; margin: 4px 2px;
         background-color: rgba(49, 50, 68, 0.4); color: #cdd6f4;
         border-radius: 6px;
@@ -423,10 +417,11 @@
   # 🌀 Sway 視窗管理器配置
   wayland.windowManager.sway = {
     enable = true;
+
     config = rec {
       modifier = "Mod4";
       terminal = "ghostty";
-      menu = "wofi --show drun";
+      menu = "fuzzel"; # 🎯 開箱即用的極速 Wayland App Launcher
 
       fonts = {
         names = [ "JetBrainsMono Nerd Font" ];
@@ -448,7 +443,9 @@
         "${mod}+Shift+space" = "floating toggle";
         "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
         "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
-        "${mod}+c" = "exec copyq toggle";
+
+        # 🎯 Fuzzel 剪貼簿整合：完美的管道隔離，零閃退風險
+        "${mod}+c" = "exec cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 
         "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
@@ -467,7 +464,8 @@
         { command = "awww-daemon & sleep 0.5 && waypaper --restore"; always = true; }
         { command = "blueman-applet"; always = true; }
         { command = "pasystray"; always = true; }
-        { command = "copyq"; always = true; }
+        { command = "wl-paste --type text --watch cliphist store"; always = true; }
+        { command = "wl-paste --type image --watch cliphist store"; always = true; }
         { command = "mako"; always = true; }
       ];
 
@@ -480,12 +478,15 @@
       window.commands = [
         { command = "floating enable"; criteria = { title = "^LINE$"; }; }
         { command = "floating enable, border none, move position 85 ppt 3 ppt"; criteria = { app_id = "^$"; title = "^$"; }; }
-        { command = "floating enable, resize set 400 px 900 px, move position 75 ppt 5 ppt"; criteria = { app_id = "^com\\.github\\.hluk\\.copyq$"; }; }
         { command = "floating enable"; criteria = { app_id = "^(org\\.telegram\\.desktop|io\\.github\\.tobagin\\.karere)$"; }; }
         { command = "floating enable"; criteria = { app_id = "^org\\.gnome\\.FileRoller$"; }; }
         { command = "floating enable, resize set 1000 700, move position center"; criteria = { app_id = "wdisplays"; }; }
         { command = "floating enable, resize set 1100 750, move position center"; criteria = { app_id = "waypaper"; }; }
         { command = "floating enable"; criteria = { title = "音量控制"; }; }
+        { command = "floating enable"; criteria = { title = "Qalculate!"; }; }
+        # 🐉 Dragon (Yoink) 暫存視窗自動浮動與置頂設定
+        { command = "floating enable, sticky enable, resize set 400 300"; criteria = { app_id = "dragon"; }; }
+        { command = "floating enable, sticky enable, resize set 400 300"; criteria = { title = "dragon"; }; }
       ];
     };
     extraConfig = ''
@@ -503,30 +504,27 @@
   # 🎯 Mako 通知美學宣告防線：Catppuccin Macchiato 風格
   services.mako = {
     enable = true;
-
-    # 💡 順應 26.05 新模組規範，並精準修正為 LINE Seed TW_TTF 字型真名
     settings = {
       font = "LINE Seed TW_TTF,JetBrainsMono Nerd Font Regular 10";
-      background-color = "#24273add";  # 內斂的摩卡深藍
-      text-color = "#cad3f5";          # 粉白文字
-      border-color = "#8aadf4";        # 科技感淡藍邊框
+      background-color = "#24273add";
+      text-color = "#cad3f5";
+      border-color = "#8aadf4";
       border-size = 2;
       border-radius = 6;
       margin = "15,15";
       padding = "12,18";
-      default-timeout = 6000;          # 6秒後自動隱形
+      default-timeout = 6000;
     };
   };
 
-  # 🎨 nwg-drawer 全螢幕抽屜視覺定製 (Catppuccin Macchiato 風格)
+  # 🎨 nwg-drawer 全螢幕抽屜視覺定製
   xdg.configFile."nwg-drawer/drawer.css".text = ''
     window {
-      background-color: rgba(36, 39, 58, 0.88); /* 摩卡深藍 + 優雅毛玻璃半透明 */
+      background-color: rgba(36, 39, 58, 0.88);
       color: #cad3f5;
       font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font", sans-serif;
     }
 
-    /* 頂部搜尋欄 */
     entry {
       background-color: rgba(49, 50, 68, 0.5);
       border: 1px solid rgba(202, 158, 230, 0.3);
@@ -538,7 +536,6 @@
       border-color: #ca9ee6;
     }
 
-    /* 頂部應用程式分類標籤（All, Internet, Programming...） */
     #category-button {
       color: #b8c0e0;
       border: none;
@@ -551,7 +548,6 @@
       border-radius: 6px;
     }
 
-    /* 應用程式圖示按鈕 */
     #app-button {
       color: #cdd6f4;
       padding: 12px;
@@ -563,38 +559,33 @@
   '';
 
   # ----------------------------------------------------------------------------
-  # 🎨 SECTION 9: 應用程式啟動與關機選單自訂 (Wofi & Wlogout)
+  # 🎨 SECTION 9: Fuzzel 輕量極速 Wayland Launcher (Catppuccin Macchiato)
   # ----------------------------------------------------------------------------
-  # 🎩 Wofi 啟動器設定
-  programs.wofi = {
+  programs.fuzzel = {
     enable = true;
     settings = {
-      show = "drun"; width = 600; height = 400; always_parse_args = true;
-      show_indicators = true; insensitive = true; allow_images = true; image_size = 28;
-      prompt = "搜尋應用程式...";
+      main = {
+        font = "LINE Seed TW_TTF:size=12, JetBrainsMono Nerd Font:size=12";
+        prompt = "❯ ";
+        terminal = "ghostty";
+        layer = "overlay";
+        width = 38;
+        line-height = 28;
+        fields = "filename,name,generic,exec,categories,keywords";
+      };
+      colors = {
+        background = "1e1e2edd";
+        text = "cdd6f4ff";
+        match = "f5c2e7ff";
+        selection = "cba6f7ff";
+        selection-text = "11111bff";
+        border = "cba6f7ff";
+      };
+      border = {
+        width = 2;
+        radius = 10;
+      };
     };
-    style = ''
-      window {
-        /* 🎯 修正：將 CSS 內字型更正為 LINE Seed TW_TTF */
-        font-family: "LINE Seed TW_TTF", "JetBrainsMono Nerd Font", sans-serif;
-        font-size: 14px;
-        background-color: rgba(30, 30, 46, 0.85); color: #cdd6f4;
-        border: 2px solid rgba(202, 158, 230, 0.3); border-radius: 12px;
-      }
-
-      #outer-box { padding: 15px; }
-      #input {
-        background-color: rgba(49, 50, 68, 0.5); color: #cdd6f4;
-        border: 1px solid rgba(202, 158, 230, 0.2); border-radius: 8px;
-        padding: 8px 12px; margin-bottom: 10px;
-      }
-      #input:focus { border-color: #ca9ee6; box-shadow: 0 0 4px rgba(202, 158, 230, 0.5); }
-      #scroll { margin-top: 5px; }
-      #text { color: #cdd6f4; margin-left: 10px; }
-      #entry { padding: 8px; border-radius: 8px; transition: all 0.1s ease-in-out; }
-      #entry:selected { background-color: rgba(202, 158, 230, 0.3); outline: none; }
-      #entry:selected #text { color: #ca9ee6; font-weight: bold; }
-    '';
   };
 
   # ⏻ Wlogout 六宮格
@@ -609,7 +600,6 @@
       { label = "reboot"; action = "systemctl reboot"; text = "Reboot"; keybind = "r"; }
     ];
     style = ''
-      /* 🎯 修正：更正 wlogout 內部渲染字型為 LINE Seed TW_TTF */
       * { background-image: none; box-shadow: none; font-family: "LINE Seed TW_TTF", sans-serif; }
       window { background-color: rgba(30, 30, 46, 0.85); }
       button, button:focus {
@@ -658,42 +648,28 @@
 
   programs.mpv = {
     enable = true;
-
-    # 🎯 核心外掛矩陣：Home Manager 會自動幫您處理載入與路徑鏈結
     scripts = with pkgs.mpvScripts; [
       uosc      # 👑 現代化動態 UI / 雙語字幕選單 / 控制面板
-      thumbfast # 📸 懸停時間軸時顯示影片實體縮圖（uosc 必備靈魂）
-      mpris     # 🎵 打通 D-Bus，讓 Waybar 或鍵盤媒體鍵能控制 MPV 播放
+      thumbfast # 📸 懸停時間軸時顯示影片實體縮圖
+      mpris     # 🎵 打通 D-Bus 供 Waybar 媒體控制
     ];
 
-    # ⚙️ mpv.conf 設定：寫成結構化 Attrset，Home Manager 會自動轉譯成標準 mpv.conf
     config = {
-      # 🚀 Sway / Wayland 硬體加速極致優化
       vo = "gpu-next";
       gpu-context = "wayland";
-      hwdec = "auto-safe";      # 自動開啟獨立顯卡（AMD/NVIDIA）硬體解碼
-
-      # 🎨 視覺邊框極簡化（把 UI 完全交給 uosc 渲染）
+      hwdec = "auto-safe";
       osd-bar = "no";
       border = "no";
-
-      # 💬 字幕與音軌語言優先權
-      slang = "cht,zh-TW,zh,eng"; # 優先載入繁體中文字幕
-      alang = "jpn,eng,zh";       # 優先載入日文/英文原音
-      sub-auto = "fuzzy";         # 模糊比對同目錄下的字幕檔
-
-      # 螢幕保持常亮（配合 Sway 避免看影片時進入睡眠）
+      slang = "cht,zh-TW,zh,eng";
+      alang = "jpn,eng,zh";
+      sub-auto = "fuzzy";
       keep-open = "yes";
     };
 
-    # 🎛️ uosc 專屬微調 (自動轉譯為 ~/.config/mpv/script-opts/uosc.conf)
     scriptOpts = {
       uosc = {
-        # 時間軸進度條風格 ("line", "bar", "compact")
         timeline_style = "bar";
-        # 控制按鈕與音量選單呈現型態
         volume_control = "hover";
-        # 自動隱藏介面的延遲毫秒數
         autohide_delay = 2000;
       };
     };

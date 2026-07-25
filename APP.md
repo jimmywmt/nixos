@@ -24,6 +24,10 @@ pulsemixer - TUI 終端機音量調節器
 
 wlr-randr - CLI螢幕管理
 
+### 工具應用
+
+qalc - 計算機
+
 ## GUI
 
 ### 裝置管理
@@ -41,3 +45,7 @@ wdisplays - 🖥️ Sway/Wayland 專用圖形化螢幕管理面板 (滑鼠拖曳
 ### 桌布
 
 waypaper
+
+### 工具應用
+
+qalculate-gtk - 計算機

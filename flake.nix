@@ -12,7 +12,7 @@
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations = {
 
-      # 🪐 樣板 A：所有 PVE 虛擬機通用此配置（0% 遊戲與重型桌面代碼殘留）
+      # 🪐 樣板 A：所有 PVE 虛擬機通用此配置
       pve-profile = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
@@ -26,7 +26,7 @@
         ];
       };
 
-      # 🏎️ 樣板 B：所有具備獨立顯卡的實體工作站通用此配置（GDM 齒輪 + Steam 滿血通電）
+      # 🏎️ 樣板 B：所有具備獨立顯卡的實體工作站通用此配置
       gpu-profile = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
