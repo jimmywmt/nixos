@@ -75,6 +75,31 @@
     swaylock            # Lock 按鈕實體依賴
     swayidle            # Idle 按鈕實體依賴
     nwg-drawer          # 全螢幕圖形化 App 啟動抽屜
+    polkit_gnome        # GTK 提權彈窗代理
+    playerctl           # 多媒體按鍵控制 CLI
+    hyprpicker          # Wayland 螢幕吸管/取色器
+    trash-cli           # CLI 安全回收桶工具
+
+    # 📸 1. 自訂一鍵區域截圖指令 (避免 Sway exec 複雜字串引號轉譯坑)
+    (writeShellScriptBin "shot-area" ''
+      FILE="$HOME/Pictures/Screenshot_$(date +%Y%m%d_%H%M%S).png"
+      REGION=$(${pkgs.slurp}/bin/slurp)
+
+      # 取消選區直接退出
+      [ -z "$REGION" ] && exit 0
+
+      ${pkgs.grim}/bin/grim -g "$REGION" "$FILE"
+      ${pkgs.wl-clipboard}/bin/wl-copy < "$FILE"
+      ${pkgs.libnotify}/bin/notify-send -a "Screenshot" "📸 區域截圖完成" "已複製並存檔至 ~/Pictures"
+    '')
+
+    # 📸 2. 自訂全螢幕截圖指令 (絕對路徑、穩定執行)
+    (writeShellScriptBin "shot-full" ''
+      FILE="$HOME/Pictures/Screenshot_$(date +%Y%m%d_%H%M%S)_full.png"
+      ${pkgs.grim}/bin/grim "$FILE"
+      ${pkgs.wl-clipboard}/bin/wl-copy < "$FILE"
+      ${pkgs.libnotify}/bin/notify-send -a "Screenshot" "📸 全螢幕截圖完成" "已複製並存檔至 ~/Pictures"
+    '')
 
     # 🎯 藍牙與硬體檢視 GUI
     blueman             # 藍牙管理面板與常駐系統托盤
@@ -135,6 +160,9 @@
     # 🖥️ 計算機引擎
     libqalculate
     qalculate-gtk
+
+    # 圖片瀏覽
+    geeqie              # 經典硬派極速 ACDSee (推薦：多圖比對、EXIF 精細)
   ];
 
   # ----------------------------------------------------------------------------
@@ -161,6 +189,8 @@
       umn  = "udisksctl unmount -b";
       poff = "udisksctl power-off -b";
       ch-clear = "cliphist wipe";
+      cb2file = "wl-paste > ~/Pictures/Clip_\$(date +%Y%m%d_%H%M%S).png && echo '📸 剪貼簿圖片已存至 ~/Pictures'";
+      tp   = "trash-put";
     };
 
     antidote = {
@@ -326,14 +356,34 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SECTION 8: Wayland 視窗管理 (Sway, Waybar & GTK)
+  # 🖥️ SECTION 8: Wayland 視窗管理 (Sway, Waybar & GTK 基礎設施)
   # ----------------------------------------------------------------------------
   services.network-manager-applet.enable = true;
+
+  # 📁 XDG 標準個人目錄自動宣告 (Downloads, Pictures, Documents...)
+  xdg.userDirs = {
+    enable = true;
+    createDirectories = true;
+  };
+
+  # 🔒 全域憑證金鑰庫 (防止 Chrome / Git 每次重開機忘記密碼與登入 Token)
+  services.gnome-keyring.enable = true;
+
+  # 🖱️ 全域 Wayland / GTK 游標主題與字型一致化防線
+  home.pointerCursor = {
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
 
   gtk = {
     enable = true;
     iconTheme = { name = "Adwaita"; package = pkgs.adwaita-icon-theme; };
     theme = { name = "Adwaita-dark"; package = pkgs.gnome-themes-extra; };
+    cursorTheme = { name = "Adwaita"; package = pkgs.adwaita-icon-theme; size = 24; };
+    font = { name = "LINE Seed TW_TTF"; size = 10; };
   };
 
   # 📊 Waybar 頂部狀態列設定
@@ -371,7 +421,11 @@
         border-radius: 0;
       }
 
-      window#waybar { background-color: transparent; }
+      /* 📊 狀態列底色：85% 不透明度的貓貓暗色底 + 微微紫羅蘭高光底邊 */
+      window#waybar {
+        background-color: rgba(30, 30, 46, 0.85);
+        border-bottom: 1px solid rgba(202, 158, 230, 0.25);
+      }
 
       #workspaces button {
         padding: 0 10px; margin: 4px 2px;
@@ -421,7 +475,7 @@
     config = rec {
       modifier = "Mod4";
       terminal = "ghostty";
-      menu = "fuzzel"; # 🎯 開箱即用的極速 Wayland App Launcher
+      menu = "fuzzel"; # 🎯 極速 Wayland App Launcher
 
       fonts = {
         names = [ "JetBrainsMono Nerd Font" ];
@@ -444,14 +498,33 @@
         "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
         "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
 
+        # 🧮 快閃計算機
+        "${mod}+equal" = "exec ghostty --class=calc-pop -e qalc";
+
         # 🎯 Fuzzel 剪貼簿整合：完美的管道隔離，零閃退風險
         "${mod}+c" = "exec cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 
-        "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
-        "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
-        "XF86AudioMute"        = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        # 📸 截圖系列 (完全封裝為 Shell 腳本，避免 Sway exec 的字串管道與引號坑)
+        # 1. Cmd + Ctrl + Shift + 4：區域拉框截圖 ➔ 存檔 ~/Pictures + 複製剪貼簿
+        "${mod}+Ctrl+Shift+4" = "exec shot-area";
+
+        # 2. Cmd + Ctrl + Shift + 3：全螢幕截圖 ➔ 存檔 ~/Pictures + 複製剪貼簿
+        "${mod}+Ctrl+Shift+3" = "exec shot-full";
+
+        # 3. Cmd + Ctrl + S：選區截圖備用快捷鍵
+        "${mod}+Ctrl+s" = "exec shot-area";
+
+        "XF86AudioRaiseVolume"  = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
+        "XF86AudioLowerVolume"  = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
+        "XF86AudioMute"         = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         "XF86MonBrightnessUp"   = "exec brightnessctl set 5%+";
         "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
+        "XF86AudioPlay"          = "exec playerctl play-pause";
+        "XF86AudioNext"          = "exec playerctl next";
+        "XF86AudioPrev"          = "exec playerctl previous";
+
+        # 🎨 螢幕取色器 (HEX 色號自動入剪貼簿)
+        "${mod}+Shift+p" = "exec hyprpicker -a";
       };
 
       input = {
@@ -464,9 +537,11 @@
         { command = "awww-daemon & sleep 0.5 && waypaper --restore"; always = true; }
         { command = "blueman-applet"; always = true; }
         { command = "pasystray"; always = true; }
+        { command = "nm-applet --indicator"; always = true; }
         { command = "wl-paste --type text --watch cliphist store"; always = true; }
         { command = "wl-paste --type image --watch cliphist store"; always = true; }
         { command = "mako"; always = true; }
+        { command = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"; always = true; }
       ];
 
       bars = [ ];
@@ -484,9 +559,18 @@
         { command = "floating enable, resize set 1100 750, move position center"; criteria = { app_id = "waypaper"; }; }
         { command = "floating enable"; criteria = { title = "音量控制"; }; }
         { command = "floating enable"; criteria = { title = "Qalculate!"; }; }
+        # 🧮 快閃計算機視窗規則 (精準匹配 qalc 視窗標題，100% 自動浮動居中)
+        { command = "floating enable, resize set 650 400, move position center"; criteria = { title = "^qalc$"; }; }
         # 🐉 Dragon (Yoink) 暫存視窗自動浮動與置頂設定
         { command = "floating enable, sticky enable, resize set 400 300"; criteria = { app_id = "dragon"; }; }
         { command = "floating enable, sticky enable, resize set 400 300"; criteria = { title = "dragon"; }; }
+        # 🖼️ Geeqie 浮動視窗 (Wayland app_id + XWayland class + Title 三重捕獲)
+        { command = "floating enable, resize set 1200 800, move position center"; criteria = { app_id = "^org\\.geeqie\\.Geeqie$"; }; }
+        { command = "floating enable, resize set 1200 800, move position center"; criteria = { class = "^Geeqie$"; }; }
+        { command = "floating enable, resize set 1200 800, move position center"; criteria = { title = ".*Geeqie.*"; }; }
+        # 🖨️ 印表機與掃描器 GUI 浮動規則
+        { command = "floating enable, resize set 800 600, move position center"; criteria = { app_id = "system-config-printer"; }; }
+        { command = "floating enable, resize set 900 650, move position center"; criteria = { app_id = "simple-scan"; }; }
       ];
     };
     extraConfig = ''
@@ -558,6 +642,31 @@
     }
   '';
 
+  # 🌙 夜間護眼模式 (依系統時間切換，適合移動式筆電)
+  services.wlsunset = {
+    enable = true;
+    sunrise = "06:30";  # 早上 06:30 開始平滑渡過到白天色溫 (6500K)
+    sunset  = "18:30";  # 晚上 18:30 開始平滑渡過到夜間色溫 (4000K)
+    temperature = {
+      day = 6500;
+      night = 4000;
+    };
+  };
+
+  # 🔒 久置自動鎖屏與節能服務
+  services.swayidle = {
+    enable = true;
+    timeouts = [
+      { timeout = 300; command = "swaylock -f -c 11111b"; }
+      { timeout = 600; command = "swaymsg 'output * power off'"; resumeCommand = "swaymsg 'output * power on'"; }
+    ];
+    # 🔒 改用事件名稱作為 Key 的 AttrSet (無 Warning 標準寫法)
+    events = {
+      before-sleep = "swaylock -f -c 11111b";
+      lock = "swaylock -f -c 11111b";
+    };
+  };
+
   # ----------------------------------------------------------------------------
   # 🎨 SECTION 9: Fuzzel 輕量極速 Wayland Launcher (Catppuccin Macchiato)
   # ----------------------------------------------------------------------------
@@ -619,7 +728,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 📝 SECTION 10: 全域代碼與協定規範 (EditorConfig & SSH Config)
+  # 📝 SECTION 10: 全域代碼與協定規範 (EditorConfig & SSH Config & MIME)
   # ----------------------------------------------------------------------------
   editorconfig = {
     enable = true;
@@ -643,7 +752,58 @@
     defaultApplications = {
       "application/pdf" = [ "org.kde.okular.desktop" ];
       "inode/directory" = [ "thunar.desktop" ];
+
+      # 🌐 預設網頁瀏覽器與 Protocol 處理器 (解決點連結無反應)
+      "text/html"                 = [ "google-chrome.desktop" ];
+      "x-scheme-handler/http"     = [ "google-chrome.desktop" ];
+      "x-scheme-handler/https"    = [ "google-chrome.desktop" ];
+      "x-scheme-handler/about"    = [ "google-chrome.desktop" ];
+      "x-scheme-handler/unknown"  = [ "google-chrome.desktop" ];
+
+      # 🖼️ 預設圖片瀏覽器：Geeqie (1. 經典通用點陣/向量圖形)
+      "image/jpeg"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/png"                     = [ "org.geeqie.Geeqie.desktop" ];
+      "image/gif"                     = [ "org.geeqie.Geeqie.desktop" ];
+      "image/webp"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/tiff"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/bmp"                     = [ "org.geeqie.Geeqie.desktop" ];
+      "image/svg+xml"                 = [ "org.geeqie.Geeqie.desktop" ];
+      "image/vnd.microsoft.icon"      = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-icon"                  = [ "org.geeqie.Geeqie.desktop" ];
+
+      # 🚀 2. 現代高效率壓縮圖像格式 (Web & Mobile)
+      "image/avif"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/heif"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/heic"                    = [ "org.geeqie.Geeqie.desktop" ];
+      "image/jxl"                     = [ "org.geeqie.Geeqie.desktop" ];
+
+      # 🎨 3. 傳統專業與極客圖形格式 (TGA, PCX, PNM)
+      "image/x-tga"                   = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-pcx"                   = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-portable-anymap"       = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-portable-bitmap"       = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-portable-pixmap"       = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-xbitmap"               = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-xpixmap"               = [ "org.geeqie.Geeqie.desktop" ];
+
+      # 📷 4. 單眼相機 RAW 檔 (Geeqie 強項：結合 Exiv2 快速預覽 RAW)
+      "image/x-canon-cr2"             = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-canon-crw"             = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-nikon-nef"             = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-sony-arw"              = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-adobe-dng"             = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-olympus-orf"           = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-fuji-raf"              = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-panasonic-raw"         = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-pentax-pef"            = [ "org.geeqie.Geeqie.desktop" ];
+      "image/x-dcraw"                 = [ "org.geeqie.Geeqie.desktop" ];
     };
+  };
+
+  # 🙈 覆蓋並隱藏重複的 Google Chrome 捷徑
+  xdg.desktopEntries."com.google.Chrome" = {
+    name = "Google Chrome";
+    noDisplay = true;
   };
 
   programs.mpv = {
