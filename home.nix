@@ -50,6 +50,7 @@
     clippy              # Rust 靜態代碼分析工具
     temurin-bin-21      # Java 21 執行期環境 (JDK)
     python3             # Python 3 執行期環境
+    uv                  # 🦀 極速 Rust 打造的 Python 套件與環境管理器
     pnpm                # 現代化、極速且節省空間的 Node.js 包管理器
 
     # 🗃️ 終端工作流與 Yazi 預覽增強
@@ -109,8 +110,13 @@
     pciutils            # 提供 lspci
     usbutils            # 提供 lsusb
 
-    # 🎯 極輕量 GUI 檔案管理
-    thunar
+    # 🎯 極輕量 GUI 檔案管理 (透過 override 將外掛組合注入至 Thunar 本體)
+    (thunar.override {
+      thunarPlugins = [
+        thunar-archive-plugin # 滑鼠右鍵一鍵壓縮/解壓縮選單
+        thunar-volman         # 隨身碟與外接裝置自動管理
+      ];
+    })
     tumbler             # Thunar 的圖片縮圖生成引擎
 
     # 🎯 現代化音效調度刀組 (PipeWire 體系)
@@ -168,6 +174,12 @@
   # ----------------------------------------------------------------------------
   # 🐚 SECTION 4: Zsh 終端 Shell 與 CLI 工具鏈
   # ----------------------------------------------------------------------------
+
+  #全域 PATH 目錄宣告
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -196,9 +208,21 @@
     antidote = {
       enable = true;
       plugins = [
+        # 1. 補全擴充
         "zsh-users/zsh-completions"
+
+        # 2. Git 互動式預覽神器 (搭配 fzf + bat)
+        "wfxr/forgit"
+
+        # 3. 精選 OMZ 實用外掛 (輕量、零負擔)
         "ohmyzsh/ohmyzsh path:plugins/git"
         "ohmyzsh/ohmyzsh path:plugins/sudo"
+        "ohmyzsh/ohmyzsh path:plugins/extract"   # 萬用解壓: extract / x
+        "ohmyzsh/ohmyzsh path:plugins/copypath"  # 快速複製當前路徑
+        "ohmyzsh/ohmyzsh path:plugins/copyfile"  # 快速複製檔案內容
+
+        # 提供 clipcopy / clippaste 底層支援
+        "ohmyzsh/ohmyzsh path:lib/clipboard.zsh"
       ];
     };
   };
@@ -754,7 +778,7 @@
       "inode/directory" = [ "thunar.desktop" ];
 
       # 🌐 預設網頁瀏覽器與 Protocol 處理器 (解決點連結無反應)
-      "text/html"                 = [ "google-chrome.desktop" ];
+      "text/html"               = [ "google-chrome.desktop" ];
       "x-scheme-handler/http"     = [ "google-chrome.desktop" ];
       "x-scheme-handler/https"    = [ "google-chrome.desktop" ];
       "x-scheme-handler/about"    = [ "google-chrome.desktop" ];

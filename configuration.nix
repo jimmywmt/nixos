@@ -71,12 +71,18 @@
   services.blueman.enable = true;
 
   # ----------------------------------------------------------------------------
-  # 🎛️ SECTION 8: 視窗通道理順 (Graphics Portal)
+  # 🎛️ SECTION 8: 視窗通道與桌面底層 D-Bus 服務 (Graphics Portal & Desktop Services)
   # ----------------------------------------------------------------------------
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
+
+  # 🎯 提供虛擬檔案系統 (GVfs) 後端：支援垃圾桶 (trash://) D-Bus 協議，與 Thunar GUI 及 CLI trash-cli (tp) 雙向同步
+  services.gvfs.enable = true;
+
+  # 🎯 提供跨應用通用縮圖生成服務 (Tumbler)：遵循 FreeDesktop 規範，非同步且隔離處理圖片/影片/文件縮圖，避免檔毀卡死 UI
+  services.tumbler.enable = true;
 
   # ----------------------------------------------------------------------------
   # 🔊 SECTION 9: 現代化 PipeWire 音訊架構配置 (Audio System)
