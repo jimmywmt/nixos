@@ -6,7 +6,9 @@
 { config, pkgs, lib, ... }:
 
 {
+  # ----------------------------------------------------------------------------
   # 🔌 SECTION 1: 外部模組路徑引入 (Declarative Imports)
+  # ----------------------------------------------------------------------------
   imports = [
     ./hardware-configuration.nix
     ./local.nix  # 🎯 核心防線：Hostname 將由這個留在本地的檔案宣告
@@ -14,12 +16,16 @@
     ./users.nix
   ];
 
-  # ⚙️ SECTION 2: 引導加載器與 Linux 核心內核配置 (Bootloader & Kernel)
+  # ----------------------------------------------------------------------------
+  # ⚙️ SECTION 2: 引導載入器與 Linux 核心內核配置 (Bootloader & Kernel)
+  # ----------------------------------------------------------------------------
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelModules = [ ];
 
-  # 🌐 SECTION 3: 網路架構 (主機名稱已移至本地硬體驱动檔設定)
+  # ----------------------------------------------------------------------------
+  # 🌐 SECTION 3: 網路架構與連線管理 (Networking & NetworkManager)
+  # ----------------------------------------------------------------------------
   networking.networkmanager.enable = true;
 
   # ----------------------------------------------------------------------------
@@ -37,19 +43,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # ⌨️ SECTION 5: Fcitx5 輸入法框架與 Rime (中州韻) 核心宣告 (Input Method)
-  # ----------------------------------------------------------------------------
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      qt6Packages.fcitx5-chinese-addons
-      fcitx5-rime
-    ];
-  };
-
-  # ----------------------------------------------------------------------------
-  # 🖥️ SECTION 6: 圖形架構基礎、視窗管理器與 XServer 關閉 (Display & XServer)
+  # 🖥️ SECTION 5: 圖形桌面、視窗管理器與系統套件 (Display & Sway & System Packages)
   # ----------------------------------------------------------------------------
   programs.sway = {
     enable = true;
@@ -62,30 +56,27 @@
   ];
 
   # ----------------------------------------------------------------------------
-  # 📡 SECTION 7: 藍牙硬體與背景管理控制模組 (Bluetooth Infrastructure)
+  # 📡 SECTION 6: 藍牙硬體與背景管理控制模組 (Bluetooth Infrastructure)
   # ----------------------------------------------------------------------------
-  # 🎯 啟用 Linux 官方 BlueZ 藍牙核心協議棧
   hardware.bluetooth.enable = true;
-
-  # 🎯 啟用 Blueman 背景 D-Bus 服務，確保不依賴龐大桌面元件即可全權調配藍牙
   services.blueman.enable = true;
 
   # ----------------------------------------------------------------------------
-  # 🎛️ SECTION 8: 視窗通道與桌面底層 D-Bus 服務 (Graphics Portal & Desktop Services)
+  # 🎛️ SECTION 7: 視窗通道與桌面底層 D-Bus 服務 (Desktop Portals & Services)
   # ----------------------------------------------------------------------------
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
-  # 🎯 提供虛擬檔案系統 (GVfs) 後端：支援垃圾桶 (trash://) D-Bus 協議，與 Thunar GUI 及 CLI trash-cli (tp) 雙向同步
+  # 🎯 提供虛擬檔案系統 (GVfs) 後端：支援垃圾桶 (trash://) 雙向同步
   services.gvfs.enable = true;
 
-  # 🎯 提供跨應用通用縮圖生成服務 (Tumbler)：遵循 FreeDesktop 規範，非同步且隔離處理圖片/影片/文件縮圖，避免檔毀卡死 UI
+  # 🎯 提供跨應用通用縮圖生成服務 (Tumbler)
   services.tumbler.enable = true;
 
   # ----------------------------------------------------------------------------
-  # 🔊 SECTION 9: 現代化 PipeWire 音訊架構配置 (Audio System)
+  # 🔊 SECTION 8: 現代化 PipeWire 音訊架構配置 (Audio System)
   # ----------------------------------------------------------------------------
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -97,16 +88,16 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 𔔁 SECTION 10: 現代化 Nerd Fonts 字型與圖示全域補全 (Fonts Infrastructure)
+  # 𔔁 SECTION 9: 現代化 Nerd Fonts 字型與圖示全域補全 (Fonts Infrastructure)
   # ----------------------------------------------------------------------------
   fonts = {
     fontDir.enable = true;
 
     packages = with pkgs; [
-      font-awesome # 🎯 Waybar 常用圖示庫
+      font-awesome             # 🎯 Waybar 常用圖示庫
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
-      nerd-fonts.symbols-only # 🎯 終極圖示救星：只抓符號不抓整套大字型，最省空間且 100% 覆蓋所有 Nerd Font 符號
+      nerd-fonts.symbols-only  # 🎯 終極圖示救星：只抓符號不抓整套大字型
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
       corefonts
@@ -126,7 +117,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🔐 SECTION 11: 系統安全增強、Tailscale 與 雜項環境變數 (Security & System Global)
+  # 🔐 SECTION 10: 系統安全、網路服務與 Nix 基礎設施 (Security, SSH, Nix GC)
   # ----------------------------------------------------------------------------
   programs.firefox.enable = false;
   nixpkgs.config.allowUnfree = true;
@@ -183,43 +174,43 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🔄 SECTION 12: Home Manager 全域系統級注入與 Shell 鎖定 (Home Manager Glue)
+  # 🔄 SECTION 11: Home Manager 全域系統級注入與 Shell 鎖定 (Home Manager Glue)
   # ----------------------------------------------------------------------------
   home-manager.users.wmt = import ./home.nix;
   environment.shells = [ pkgs.zsh ];
   programs.zsh.enable = true;
 
   # ----------------------------------------------------------------------------
-  # 🖨️ SECTION 13: 辦公周邊防線：列印與掃描硬體通電 (Peripherals Infrastructure)
+  # 🖨️ SECTION 12: 辦公周邊與周邊硬體防線 (Printing, Scanning & SmartCard)
   # ----------------------------------------------------------------------------
   services.printing = {
     enable = true;
     drivers = [ pkgs.gutenprint ];
   };
 
-  # 🎯 啟用 Avahi 背景廣播協議，確保能在區域網域內盲抓網路印表機與 Wi-Fi 複合機
+  # 🎯 啟用 Avahi 背景廣播協議，盲抓區域網路印表機
   services.avahi = {
     enable = true;
     nssmdns4 = true;
     openFirewall = true;
   };
 
-  # 🎯 物理啟用 SANE 掃描器驅動架構，並掛載 airscan 免驅協議以對齊現代複合機
+  # 🎯 啟用 SANE 掃描器驅動架構，並掛載 airscan 免驅協議
   hardware.sane = {
     enable = true;
     extraBackends = [ pkgs.sane-airscan ];
   };
 
-  # 在 NixOS 系統配置中啟用智慧卡底層服務
+  # 啟用智慧卡底層服務
   services.pcscd.enable = true;
 
   # ----------------------------------------------------------------------------
-  # 📦️ SECTION 14: 在 NixOS 系統層啟用 Podman 核心引擎
+  # 📦 SECTION 13: 虛擬化與容器引擎 (Podman Infrastructure)
   # ----------------------------------------------------------------------------
   virtualisation.podman = {
     enable = true;
-    dockerCompat = true;                         # 自動建立 docker 別名，相容傳統指令
-    defaultNetwork.settings.dns_enabled = true;  # 確保容器間的 DNS 解析正常運作
+    dockerCompat = true;                         # 自動建立 docker 別名
+    defaultNetwork.settings.dns_enabled = true;  # 容器間 DNS 解析
   };
 
   system.stateVersion = "26.05";

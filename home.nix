@@ -14,14 +14,18 @@
   home.stateVersion = "26.05";
 
   # ----------------------------------------------------------------------------
-  # ⌨️ SECTION 2: 全域輸入法與環境變數對齊 (Wayland Input Method)
+  # ⌨️ SECTION 2: 全域環境變數與 PATH 對齊
   # ----------------------------------------------------------------------------
   home.sessionVariables = {
-    GTK_IM_MODULE = "fcitx5";
-    QT_IM_MODULE = "fcitx5";
-    XMODIFIERS = "@im=fcitx5";
-    IMSETTINGS_MODULE = "fcitx5";
+    GTK_IM_MODULE = "fcitx";
+    QT_IM_MODULE = "fcitx";
+    XMODIFIERS = "@im=fcitx";
+    IMSETTINGS_MODULE = "fcitx";
   };
+
+  home.sessionPath = [
+    "$HOME/.local/bin"
+  ];
 
   # ----------------------------------------------------------------------------
   # 📦 SECTION 3: 個人軟體包依賴代管 (User-level Packages)
@@ -49,9 +53,21 @@
     rustfmt             # Rust 程式碼格式化工具
     clippy              # Rust 靜態代碼分析工具
     temurin-bin-21      # Java 21 執行期環境 (JDK)
+    gradle
     python3             # Python 3 執行期環境
     uv                  # 🦀 極速 Rust 打造的 Python 套件與環境管理器
+    nodejs
     pnpm                # 現代化、極速且節省空間的 Node.js 包管理器
+    (rstudioWrapper.override {
+      packages = with pkgs.rPackages; [
+        tidyverse      # 已包含 ggplot2, dplyr, readr, tidyr, purrr 等核心套件
+        devtools       # 套件開發工具
+        rmarkdown      # 動態報告輸出
+        knitr          # 報告編織工具
+        styler         # 提供 styler 以供 RFormat 呼叫
+        languageserver # 給 Neovim (nvim-lspconfig) 使用的 LSP Server
+      ];
+    })
 
     # 🗃️ 終端工作流與 Yazi 預覽增強
     tmux                # 終端機複用器
@@ -81,12 +97,11 @@
     hyprpicker          # Wayland 螢幕吸管/取色器
     trash-cli           # CLI 安全回收桶工具
 
-    # 📸 1. 自訂一鍵區域截圖指令 (避免 Sway exec 複雜字串引號轉譯坑)
+    # 📸 1. 自訂一鍵區域截圖指令
     (writeShellScriptBin "shot-area" ''
       FILE="$HOME/Pictures/Screenshot_$(date +%Y%m%d_%H%M%S).png"
       REGION=$(${pkgs.slurp}/bin/slurp)
 
-      # 取消選區直接退出
       [ -z "$REGION" ] && exit 0
 
       ${pkgs.grim}/bin/grim -g "$REGION" "$FILE"
@@ -94,7 +109,7 @@
       ${pkgs.libnotify}/bin/notify-send -a "Screenshot" "📸 區域截圖完成" "已複製並存檔至 ~/Pictures"
     '')
 
-    # 📸 2. 自訂全螢幕截圖指令 (絕對路徑、穩定執行)
+    # 📸 2. 自訂全螢幕截圖指令
     (writeShellScriptBin "shot-full" ''
       FILE="$HOME/Pictures/Screenshot_$(date +%Y%m%d_%H%M%S)_full.png"
       ${pkgs.grim}/bin/grim "$FILE"
@@ -110,11 +125,11 @@
     pciutils            # 提供 lspci
     usbutils            # 提供 lsusb
 
-    # 🎯 極輕量 GUI 檔案管理 (透過 override 將外掛組合注入至 Thunar 本體)
+    # 🎯 極輕量 GUI 檔案管理
     (thunar.override {
       thunarPlugins = [
-        thunar-archive-plugin # 滑鼠右鍵一鍵壓縮/解壓縮選單
-        thunar-volman         # 隨身碟與外接裝置自動管理
+        thunar-archive-plugin
+        thunar-volman
       ];
     })
     tumbler             # Thunar 的圖片縮圖生成引擎
@@ -127,6 +142,7 @@
     # 🎯 即時通訊軟體區
     telegram-desktop
     karere
+    wechat
 
     # 🖨️ 印表機和掃描器
     simple-scan         # GNOME 家族的極簡掃描器
@@ -168,18 +184,54 @@
     qalculate-gtk
 
     # 圖片瀏覽
-    geeqie              # 經典硬派極速 ACDSee (推薦：多圖比對、EXIF 精細)
+    geeqie              # 經典硬派極速 ACDSee
   ];
 
-  # ----------------------------------------------------------------------------
-  # 🐚 SECTION 4: Zsh 終端 Shell 與 CLI 工具鏈
-  # ----------------------------------------------------------------------------
+  programs.java = {
+    enable = true;
+    package = pkgs.temurin-bin-21;
+  };
 
-  #全域 PATH 目錄宣告
-  home.sessionPath = [
-    "$HOME/.local/bin"
-  ];
+  # ----------------------------------------------------------------------------
+  # 📚 Zathura PDF 閱讀器與 SyncTeX 反向搜尋設定
+  # ----------------------------------------------------------------------------
+  programs.zathura = {
+    enable = true;
+    options = {
+      # 🎯 核心：設定雙擊 PDF 時反向跳回 Neovim (%f 為檔案路徑，%l 為行號)
+      "set-synctex-editor-command" = "nvim --headless --remote-silent +%{line} %{input}";
 
+      # 🎨 視覺風格：Catppuccin Macchiato 貓貓暗色系適配
+      "font" = "JetBrainsMono Nerd Font 11";
+      "default-bg" = "#1e1e2e";
+      "default-fg" = "#cdd6f4";
+      "statusbar-bg" = "#181825";
+      "statusbar-fg" = "#cdd6f4";
+      "inputbar-bg" = "#181825";
+      "inputbar-fg" = "#cdd6f4";
+      "completion-bg" = "#1e1e2e";
+      "completion-fg" = "#cdd6f4";
+      "completion-highlight-bg" = "#313244";
+      "completion-highlight-fg" = "#cba6f7";
+      "highlight-color" = "#f9e2af";
+      "highlight-active-color" = "#fab387";
+      "notification-error-bg" = "#f38ba8";
+      "notification-error-fg" = "#1e1e2e";
+      "notification-warning-bg" = "#fab387";
+      "notification-warning-fg" = "#1e1e2e";
+      "notification-bg" = "#a6e3a1";
+      "notification-fg" = "#1e1e2e";
+
+      # ⚙️ 互動行為設定
+      "adjust-open" = "best-fit";
+      "statusbar-home-tilde" = true;
+      "selection-clipboard" = "clipboard";
+    };
+  };
+
+  # ----------------------------------------------------------------------------
+  # 🐚 SECTION 4: Shell 與 Terminal 生態系 (Zsh, Ghostty, Starship, Zoxide)
+  # ----------------------------------------------------------------------------
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -187,49 +239,39 @@
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      ll   = "ls -l";
-      g    = "git";
-      nr   = "git add -A && sudo nixos-rebuild switch --flake ~/.config/nixos/#\${NIX_PROFILE:-pve-profile} && exec zsh";
-      nxc  = "sudo nix-collect-garbage --delete-old";
-      nxcg = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
-      nxl  = "sudo nixos-rebuild list-generations";
-      cat  = "bat";
-      top  = "btm";
-      aria = "aria2c";
-      y    = "yazi";
-      mn   = "udisksctl mount -b";
-      umn  = "udisksctl unmount -b";
-      poff = "udisksctl power-off -b";
+      ll       = "ls -l";
+      g        = "git";
+      nr       = "git add -A && sudo nixos-rebuild switch --flake ~/.config/nixos/#\${NIX_PROFILE:-pve-profile} && exec zsh";
+      nxc      = "sudo nix-collect-garbage --delete-old";
+      nxcg     = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
+      nxl      = "sudo nixos-rebuild list-generations";
+      cat      = "bat";
+      top      = "btm";
+      aria     = "aria2c";
+      y        = "yazi";
+      mn       = "udisksctl mount -b";
+      umn      = "udisksctl unmount -b";
+      poff     = "udisksctl power-off -b";
       ch-clear = "cliphist wipe";
-      cb2file = "wl-paste > ~/Pictures/Clip_\$(date +%Y%m%d_%H%M%S).png && echo '📸 剪貼簿圖片已存至 ~/Pictures'";
-      tp   = "trash-put";
+      cb2file  = "wl-paste > ~/Pictures/Clip_\$(date +%Y%m%d_%H%M%S).png && echo '📸 剪貼簿圖片已存至 ~/Pictures'";
+      tp       = "trash-put";
     };
 
     antidote = {
       enable = true;
       plugins = [
-        # 1. 補全擴充
         "zsh-users/zsh-completions"
-
-        # 2. Git 互動式預覽神器 (搭配 fzf + bat)
         "wfxr/forgit"
-
-        # 3. 精選 OMZ 實用外掛 (輕量、零負擔)
         "ohmyzsh/ohmyzsh path:plugins/git"
         "ohmyzsh/ohmyzsh path:plugins/sudo"
-        "ohmyzsh/ohmyzsh path:plugins/extract"   # 萬用解壓: extract / x
-        "ohmyzsh/ohmyzsh path:plugins/copypath"  # 快速複製當前路徑
-        "ohmyzsh/ohmyzsh path:plugins/copyfile"  # 快速複製檔案內容
-
-        # 提供 clipcopy / clippaste 底層支援
+        "ohmyzsh/ohmyzsh path:plugins/extract"
+        "ohmyzsh/ohmyzsh path:plugins/copypath"
+        "ohmyzsh/ohmyzsh path:plugins/copyfile"
         "ohmyzsh/ohmyzsh path:lib/clipboard.zsh"
       ];
     };
   };
 
-  # ----------------------------------------------------------------------------
-  # 💻 Ghostty 終端機與 Terminal 工具鏈
-  # ----------------------------------------------------------------------------
   programs.ghostty = {
     enable = true;
     settings = {
@@ -248,9 +290,6 @@
     options = [ "--cmd cd" ];
   };
 
-  # ----------------------------------------------------------------------------
-  # 🎨 SECTION 5: Starship 現代化跨 Shell 提示字元設定
-  # ----------------------------------------------------------------------------
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
@@ -293,7 +332,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 📝 SECTION 6: Neovim 編輯器與配置管理
+  # 📝 SECTION 5: 開發者工具與 CLI 服務 (Neovim, Git, Yazi, Fzf...)
   # ----------------------------------------------------------------------------
   programs.neovim = {
     enable = true;
@@ -301,7 +340,14 @@
     vimAlias = true;
     extraPackages = with pkgs; [
       git gcc gnumake ripgrep fd gopls rust-analyzer lua-language-server stylua
-      google-java-format prettier eslint_d black isort clang-tools tex-fmt
+      google-java-format prettier eslint_d black isort clang-tools lldb tex-fmt
+      vscode-extensions.vadimcn.vscode-lldb.adapter delve texlab harper
+      jdt-language-server ltex-ls-plus marksman pyright ruff python3Packages.debugpy
+      vscode-extensions.vscjava.vscode-java-debug
+      vscode-extensions.vscjava.vscode-java-test
+      vscode-langservers-extracted
+      typescript-language-server
+      vue-language-server
     ];
     plugins = with pkgs.vimPlugins; [
       (nvim-treesitter.withPlugins (p: with p; [
@@ -312,9 +358,6 @@
 
   xdg.configFile."nvim".source = ./dotfiles/nvim;
 
-  # ----------------------------------------------------------------------------
-  # 🛠️ SECTION 7: 現代化系統服務與 CLI 工具鏈
-  # ----------------------------------------------------------------------------
   services.udiskie.enable = true;
 
   programs.yazi = {
@@ -380,20 +423,17 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SECTION 8: Wayland 視窗管理 (Sway, Waybar & GTK 基礎設施)
+  # 🖥️ SECTION 6: Wayland 視窗管理與 GTK 基礎設施 (Sway, Waybar, Mako...)
   # ----------------------------------------------------------------------------
   services.network-manager-applet.enable = true;
 
-  # 📁 XDG 標準個人目錄自動宣告 (Downloads, Pictures, Documents...)
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
   };
 
-  # 🔒 全域憑證金鑰庫 (防止 Chrome / Git 每次重開機忘記密碼與登入 Token)
   services.gnome-keyring.enable = true;
 
-  # 🖱️ 全域 Wayland / GTK 游標主題與字型一致化防線
   home.pointerCursor = {
     name = "Adwaita";
     package = pkgs.adwaita-icon-theme;
@@ -410,7 +450,6 @@
     font = { name = "LINE Seed TW_TTF"; size = 10; };
   };
 
-  # 📊 Waybar 頂部狀態列設定
   programs.waybar = {
     enable = true;
     systemd = {
@@ -445,7 +484,6 @@
         border-radius: 0;
       }
 
-      /* 📊 狀態列底色：85% 不透明度的貓貓暗色底 + 微微紫羅蘭高光底邊 */
       window#waybar {
         background-color: rgba(30, 30, 46, 0.85);
         border-bottom: 1px solid rgba(202, 158, 230, 0.25);
@@ -499,7 +537,7 @@
     config = rec {
       modifier = "Mod4";
       terminal = "ghostty";
-      menu = "fuzzel"; # 🎯 極速 Wayland App Launcher
+      menu = "fuzzel";
 
       fonts = {
         names = [ "JetBrainsMono Nerd Font" ];
@@ -522,20 +560,11 @@
         "${mod}+h" = "focus left"; "${mod}+j" = "focus down"; "${mod}+k" = "focus up"; "${mod}+l" = "focus right";
         "${mod}+Shift+h" = "move left"; "${mod}+Shift+j" = "move down"; "${mod}+Shift+k" = "move up"; "${mod}+Shift+l" = "move right";
 
-        # 🧮 快閃計算機
         "${mod}+equal" = "exec ghostty --class=calc-pop -e qalc";
-
-        # 🎯 Fuzzel 剪貼簿整合：完美的管道隔離，零閃退風險
         "${mod}+c" = "exec cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 
-        # 📸 截圖系列 (完全封裝為 Shell 腳本，避免 Sway exec 的字串管道與引號坑)
-        # 1. Cmd + Ctrl + Shift + 4：區域拉框截圖 ➔ 存檔 ~/Pictures + 複製剪貼簿
         "${mod}+Ctrl+Shift+4" = "exec shot-area";
-
-        # 2. Cmd + Ctrl + Shift + 3：全螢幕截圖 ➔ 存檔 ~/Pictures + 複製剪貼簿
         "${mod}+Ctrl+Shift+3" = "exec shot-full";
-
-        # 3. Cmd + Ctrl + S：選區截圖備用快捷鍵
         "${mod}+Ctrl+s" = "exec shot-area";
 
         "XF86AudioRaiseVolume"  = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
@@ -547,7 +576,6 @@
         "XF86AudioNext"          = "exec playerctl next";
         "XF86AudioPrev"          = "exec playerctl previous";
 
-        # 🎨 螢幕取色器 (HEX 色號自動入剪貼簿)
         "${mod}+Shift+p" = "exec hyprpicker -a";
       };
 
@@ -557,7 +585,6 @@
       };
 
       startup = [
-        { command = "fcitx5 -d --replace"; always = true; }
         { command = "awww-daemon & sleep 0.5 && waypaper --restore"; always = true; }
         { command = "blueman-applet"; always = true; }
         { command = "pasystray"; always = true; }
@@ -583,16 +610,12 @@
         { command = "floating enable, resize set 1100 750, move position center"; criteria = { app_id = "waypaper"; }; }
         { command = "floating enable"; criteria = { title = "音量控制"; }; }
         { command = "floating enable"; criteria = { title = "Qalculate!"; }; }
-        # 🧮 快閃計算機視窗規則 (精準匹配 qalc 視窗標題，100% 自動浮動居中)
         { command = "floating enable, resize set 650 400, move position center"; criteria = { title = "^qalc$"; }; }
-        # 🐉 Dragon (Yoink) 暫存視窗自動浮動與置頂設定
         { command = "floating enable, sticky enable, resize set 400 300"; criteria = { app_id = "dragon"; }; }
         { command = "floating enable, sticky enable, resize set 400 300"; criteria = { title = "dragon"; }; }
-        # 🖼️ Geeqie 浮動視窗 (Wayland app_id + XWayland class + Title 三重捕獲)
         { command = "floating enable, resize set 1200 800, move position center"; criteria = { app_id = "^org\\.geeqie\\.Geeqie$"; }; }
         { command = "floating enable, resize set 1200 800, move position center"; criteria = { class = "^Geeqie$"; }; }
         { command = "floating enable, resize set 1200 800, move position center"; criteria = { title = ".*Geeqie.*"; }; }
-        # 🖨️ 印表機與掃描器 GUI 浮動規則
         { command = "floating enable, resize set 800 600, move position center"; criteria = { app_id = "system-config-printer"; }; }
         { command = "floating enable, resize set 900 650, move position center"; criteria = { app_id = "simple-scan"; }; }
       ];
@@ -602,14 +625,12 @@
     '';
   };
 
-  # 🌐 XDG Desktop Portal 總線防線
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
     config = { sway = { default = [ "wlr" ]; }; };
   };
 
-  # 🎯 Mako 通知美學宣告防線：Catppuccin Macchiato 風格
   services.mako = {
     enable = true;
     settings = {
@@ -625,7 +646,6 @@
     };
   };
 
-  # 🎨 nwg-drawer 全螢幕抽屜視覺定製
   xdg.configFile."nwg-drawer/drawer.css".text = ''
     window {
       background-color: rgba(36, 39, 58, 0.88);
@@ -666,25 +686,22 @@
     }
   '';
 
-  # 🌙 夜間護眼模式 (依系統時間切換，適合移動式筆電)
   services.wlsunset = {
     enable = true;
-    sunrise = "06:30";  # 早上 06:30 開始平滑渡過到白天色溫 (6500K)
-    sunset  = "18:30";  # 晚上 18:30 開始平滑渡過到夜間色溫 (4000K)
+    sunrise = "06:30";
+    sunset  = "18:30";
     temperature = {
       day = 6500;
       night = 4000;
     };
   };
 
-  # 🔒 久置自動鎖屏與節能服務
   services.swayidle = {
     enable = true;
     timeouts = [
       { timeout = 300; command = "swaylock -f -c 11111b"; }
       { timeout = 600; command = "swaymsg 'output * power off'"; resumeCommand = "swaymsg 'output * power on'"; }
     ];
-    # 🔒 改用事件名稱作為 Key 的 AttrSet (無 Warning 標準寫法)
     events = {
       before-sleep = "swaylock -f -c 11111b";
       lock = "swaylock -f -c 11111b";
@@ -692,7 +709,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 🎨 SECTION 9: Fuzzel 輕量極速 Wayland Launcher (Catppuccin Macchiato)
+  # 🚀 SECTION 7: Launcher 與電源選單 (Fuzzel & Wlogout)
   # ----------------------------------------------------------------------------
   programs.fuzzel = {
     enable = true;
@@ -721,7 +738,6 @@
     };
   };
 
-  # ⏻ Wlogout 六宮格
   programs.wlogout = {
     enable = true;
     layout = [
@@ -752,7 +768,32 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 📝 SECTION 10: 全域代碼與協定規範 (EditorConfig & SSH Config & MIME)
+  # ⌨️ SECTION 8: 輸入法框架與特化軟體啟動補丁 (Fcitx5 & WeChat)
+  # ----------------------------------------------------------------------------
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5.addons = with pkgs; [
+      qt6Packages.fcitx5-chinese-addons
+      kdePackages.fcitx5-qt
+      libsForQt5.fcitx5-qt
+      fcitx5-rime
+      fcitx5-gtk
+    ];
+  };
+
+  # 🎯 宣告式覆寫 WeChat Desktop 捷徑 (綁定 XWayland + XCB 通道)
+  xdg.desktopEntries.wechat = {
+    name = "WeChat";
+    exec = "env QT_QPA_PLATFORM=xcb QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx wechat %U";
+    icon = "wechat";
+    terminal = false;
+    type = "Application";
+    categories = [ "Network" "InstantMessaging" ];
+  };
+
+  # ----------------------------------------------------------------------------
+  # 📝 SECTION 9: 全域代碼與協定規範 (EditorConfig, SSH, MIME & MPV)
   # ----------------------------------------------------------------------------
   editorconfig = {
     enable = true;
@@ -777,14 +818,14 @@
       "application/pdf" = [ "org.kde.okular.desktop" ];
       "inode/directory" = [ "thunar.desktop" ];
 
-      # 🌐 預設網頁瀏覽器與 Protocol 處理器 (解決點連結無反應)
+      # 🌐 預設網頁瀏覽器與 Protocol 處理器
       "text/html"               = [ "google-chrome.desktop" ];
       "x-scheme-handler/http"     = [ "google-chrome.desktop" ];
       "x-scheme-handler/https"    = [ "google-chrome.desktop" ];
       "x-scheme-handler/about"    = [ "google-chrome.desktop" ];
       "x-scheme-handler/unknown"  = [ "google-chrome.desktop" ];
 
-      # 🖼️ 預設圖片瀏覽器：Geeqie (1. 經典通用點陣/向量圖形)
+      # 🖼️ 預設圖片瀏覽器：Geeqie
       "image/jpeg"                    = [ "org.geeqie.Geeqie.desktop" ];
       "image/png"                     = [ "org.geeqie.Geeqie.desktop" ];
       "image/gif"                     = [ "org.geeqie.Geeqie.desktop" ];
@@ -795,13 +836,11 @@
       "image/vnd.microsoft.icon"      = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-icon"                  = [ "org.geeqie.Geeqie.desktop" ];
 
-      # 🚀 2. 現代高效率壓縮圖像格式 (Web & Mobile)
       "image/avif"                    = [ "org.geeqie.Geeqie.desktop" ];
       "image/heif"                    = [ "org.geeqie.Geeqie.desktop" ];
       "image/heic"                    = [ "org.geeqie.Geeqie.desktop" ];
       "image/jxl"                     = [ "org.geeqie.Geeqie.desktop" ];
 
-      # 🎨 3. 傳統專業與極客圖形格式 (TGA, PCX, PNM)
       "image/x-tga"                   = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-pcx"                   = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-portable-anymap"       = [ "org.geeqie.Geeqie.desktop" ];
@@ -810,7 +849,6 @@
       "image/x-xbitmap"               = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-xpixmap"               = [ "org.geeqie.Geeqie.desktop" ];
 
-      # 📷 4. 單眼相機 RAW 檔 (Geeqie 強項：結合 Exiv2 快速預覽 RAW)
       "image/x-canon-cr2"             = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-canon-crw"             = [ "org.geeqie.Geeqie.desktop" ];
       "image/x-nikon-nef"             = [ "org.geeqie.Geeqie.desktop" ];
@@ -860,7 +898,7 @@
   };
 
   # ----------------------------------------------------------------------------
-  # 👑 SECTION 11: Home Manager 核心維護宣告
+  # 👑 SECTION 10: Home Manager 核心維護宣告
   # ----------------------------------------------------------------------------
   programs.home-manager.enable = true;
 }

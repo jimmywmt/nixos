@@ -9,19 +9,18 @@ function M.setup()
 
 	local servers = {
 		"go",
-		-- "python",
-		-- "ts",
-		-- "vue_ls",
-		-- "r",
+		"python",
+		"ts",
+		"volar",
+		"r",
 		"lua",
-		-- "ruff",
-		-- "marksman",
-		-- "clangd",
-		-- "cssls",
-		-- "texlab",
-		-- "ltex",
-		-- "harper_ls",
-		-- "tailwindcss",
+		"ruff",
+		"marksman",
+		"clangd",
+		"cssls",
+		"texlab",
+		"ltex_ls_plus",
+		"harper_ls",
 	} -- 想載哪些就列哪些
 	for _, name in ipairs(servers) do
 		local ok, mod = pcall(require, "lsp.servers." .. name)
