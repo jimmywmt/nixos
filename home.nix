@@ -45,6 +45,7 @@
     lazygit             # 終端機裡的 Git 圖形化整合介面
     gnumake             # 傳統 GNU Make 編譯工具
     gcc                 # GNU 語言編譯器套件 (C/C++)
+    neovide             # nvim 的 GUI
 
     # 🚀 程式語言與開發環境 (LSP 依賴)
     go                  # Go 程式語言編譯器與工具鏈
@@ -115,6 +116,14 @@
       ${pkgs.grim}/bin/grim "$FILE"
       ${pkgs.wl-clipboard}/bin/wl-copy < "$FILE"
       ${pkgs.libnotify}/bin/notify-send -a "Screenshot" "📸 全螢幕截圖完成" "已複製並存檔至 ~/Pictures"
+    '')
+
+    # 3. 建立 zathura 反向搜尋設定
+    (pkgs.writeShellScriptBin "zathura-remote-nvim" ''
+      SERVER=$(cat /tmp/curserver 2>/dev/null)
+      if [ -n "$SERVER" ]; then
+        nvim --server "$SERVER" --remote-send "<C-\><C-N>:e $1<CR>:$2<CR>"
+      fi
     '')
 
     # 🎯 藍牙與硬體檢視 GUI
@@ -192,16 +201,35 @@
     package = pkgs.temurin-bin-21;
   };
 
+  # 🎯 自動同步並實體解開 NixOS 系統字型至家目錄（專治 ONLYOFFICE Symlink 缺陷）
+  home.activation.syncNixosFonts = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD mkdir -p $HOME/.local/share/fonts/nix-managed
+
+    SYS_FONTS=""
+    if [ -d /run/current-system/sw/share/X11/fonts/ ]; then
+      SYS_FONTS="/run/current-system/sw/share/X11/fonts/"
+    elif [ -d /usr/share/fonts/ ]; then
+      SYS_FONTS="/usr/share/fonts/"
+    fi
+
+    if [ -n "$SYS_FONTS" ]; then
+      # 直接使用 -aL 進行無差別實體鏡像同步，不再加脆弱的 --include/--exclude 規則
+      $DRY_RUN_CMD ${pkgs.rsync}/bin/rsync -aL --delete \
+        "$SYS_FONTS" "$HOME/.local/share/fonts/nix-managed/"
+    fi
+  '';
+
   # ----------------------------------------------------------------------------
   # 📚 Zathura PDF 閱讀器與 SyncTeX 反向搜尋設定
   # ----------------------------------------------------------------------------
   programs.zathura = {
     enable = true;
     options = {
-      # 🎯 核心：設定雙擊 PDF 時反向跳回 Neovim (%f 為檔案路徑，%l 為行號)
-      "set-synctex-editor-command" = "nvim --headless --remote-silent +%{line} %{input}";
+      # 🎯 顯式開啟 SyncTeX 功能
+      "synctex" = true;
+      "synctex-editor-command" = "zathura-remote-nvim %{input} %{line}";
 
-      # 🎨 視覺風格：Catppuccin Macchiato 貓貓暗色系適配
+      # 🎨 視覺風格：Catppuccin Mocha 暗色系適配
       "font" = "JetBrainsMono Nerd Font 11";
       "default-bg" = "#1e1e2e";
       "default-fg" = "#cdd6f4";
@@ -213,8 +241,8 @@
       "completion-fg" = "#cdd6f4";
       "completion-highlight-bg" = "#313244";
       "completion-highlight-fg" = "#cba6f7";
-      "highlight-color" = "#f9e2af";
-      "highlight-active-color" = "#fab387";
+      "highlight-color" = "rgba(249, 226, 175, 0.35)";        # 一般高亮 (Catppuccin Yellow)
+      "highlight-active-color" = "rgba(250, 179, 135, 0.45)"; # 當前跳轉點 (Catppuccin Peach)
       "notification-error-bg" = "#f38ba8";
       "notification-error-fg" = "#1e1e2e";
       "notification-warning-bg" = "#fab387";
@@ -773,13 +801,15 @@
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      qt6Packages.fcitx5-chinese-addons
-      kdePackages.fcitx5-qt
-      libsForQt5.fcitx5-qt
-      fcitx5-rime
-      fcitx5-gtk
-    ];
+    fcitx5 = {
+      addons = with pkgs; [
+        qt6Packages.fcitx5-chinese-addons
+        kdePackages.fcitx5-qt
+        libsForQt5.fcitx5-qt
+        fcitx5-rime
+        fcitx5-gtk
+      ];
+    };
   };
 
   # 🎯 宣告式覆寫 WeChat Desktop 捷徑 (綁定 XWayland + XCB 通道)

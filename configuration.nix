@@ -21,7 +21,8 @@
   # ----------------------------------------------------------------------------
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelModules = [ ];
+  # 載入 Linux 核心原生 Switch 驅動（0 常駐進程，核心層直接處理）
+  boot.kernelModules = [ "uhid" "hid_nintendo" ];
 
   # ----------------------------------------------------------------------------
   # 🌐 SECTION 3: 網路架構與連線管理 (Networking & NetworkManager)
@@ -60,6 +61,11 @@
   # ----------------------------------------------------------------------------
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+
+  # 🎯 專門針對 Xbox 藍牙手把的驅動（自動修復 ERTM、震動與按鍵映射）
+  hardware.xpadneo.enable = true;
+  # 🎯 確保 udev 權限存在
+  hardware.steam-hardware.enable = true;
 
   # ----------------------------------------------------------------------------
   # 🎛️ SECTION 7: 視窗通道與桌面底層 D-Bus 服務 (Desktop Portals & Services)
@@ -102,10 +108,12 @@
       nerd-fonts.fira-code
       corefonts
       liberation_ttf
+      vista-fonts
       # 置入本機字型
-      (runCommand "line-seed-tw" {} ''
+      # 🎯 置入本機字型（自動遞迴掃描 ./fonts 底下的所有 .ttf 與 .ttc 檔）
+      (runCommand "custom-local-fonts" {} ''
         mkdir -p $out/share/fonts/truetype
-        cp -r ${./fonts/TTF}/*.ttf $out/share/fonts/truetype/
+        find ${./fonts} -type f \( -name "*.ttf" -o -name "*.ttc" -o -name "*.TTF" -o -name "*.TTC" \) -exec cp {} $out/share/fonts/truetype/ \;
       '')
     ];
     fontconfig = {
@@ -115,6 +123,13 @@
       };
     };
   };
+
+  # 🎯 每次系統 switch 時，先清空舊目錄，再將 /usr/share/fonts 乾淨鏈接到最新 Profile
+  system.activationScripts.usrShareFonts = ''
+    mkdir -p /usr/share
+    rm -rf /usr/share/fonts
+    ln -sfn /run/current-system/sw/share/X11/fonts /usr/share/fonts
+  '';
 
   # ----------------------------------------------------------------------------
   # 🔐 SECTION 10: 系統安全、網路服務與 Nix 基礎設施 (Security, SSH, Nix GC)

@@ -289,6 +289,19 @@ return function(common)
 	end
 
 	---------------------------------------------------------------------------
+	-- Zathura 反向搜尋 (Inverse Search)：將當前 nvim socket 寫入 /tmp/curserver
+	---------------------------------------------------------------------------
+	vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile", "BufEnter" }, {
+		pattern = { "*.tex", "*.plaintex" },
+		callback = function()
+			if vim.v.servername and vim.v.servername ~= "" then
+				vim.fn.writefile({ vim.v.servername }, "/tmp/curserver")
+			end
+		end,
+		desc = "Write nvim --servername to /tmp/curserver for Zathura inverse search",
+	})
+
+	---------------------------------------------------------------------------
 	-- 自動在 TeX 檔啟動 texlab
 	---------------------------------------------------------------------------
 	vim.api.nvim_create_autocmd("FileType", {
