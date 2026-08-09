@@ -21,8 +21,8 @@
   # ----------------------------------------------------------------------------
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # 載入 Linux 核心原生 Switch 驅動（0 常駐進程，核心層直接處理）
-  boot.kernelModules = [ "uhid" "hid_nintendo" ];
+  # 載入 Linux 核心原生 Switch 驅動（0 常駐進程，核心層直接處理）和 Xbox 手把驅動
+  boot.kernelModules = [ "uhid" "hid_nintendo" "hid_xpadneo" ];
 
   # ----------------------------------------------------------------------------
   # 🌐 SECTION 3: 網路架構與連線管理 (Networking & NetworkManager)
