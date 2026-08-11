@@ -30,7 +30,25 @@
   # ----------------------------------------------------------------------------
   # 📦 SECTION 3: 個人軟體包依賴代管 (User-level Packages)
   # ----------------------------------------------------------------------------
-  home.packages = with pkgs; [
+  home.packages = with pkgs;
+    let
+      # 1. 宣告包好套件的 R 核心
+      myR = rWrapper.override {
+        packages = with rPackages; [
+          tidyverse      # 已包含 ggplot2, dplyr, readr, tidyr, purrr 等核心套件
+          devtools       # 套件開發工具
+          rmarkdown      # 動態報告輸出
+          knitr          # 報告編織工具
+          styler         # 提供 styler 以供 RFormat 呼叫
+          languageserver # 給 Neovim (nvim-lspconfig) 使用的 LSP Server
+        ];
+      };
+      # 2. 宣告使用此 R 核心的 RStudio
+      myRStudio = rstudioWrapper.override {
+        packages = [ myR ];
+      };
+  in
+  [
     # 🦀 Rust 現代化 CLI 刀組 (Rewrite It In Rust)
     ripgrep             # 宇宙最快純文字搜尋引擎
     fd                  # 簡單、快速的尋找工具
@@ -39,6 +57,16 @@
     tokei               # 程式碼行數與語言佔比統計
     hyperfine           # 命令行基準測試神器
     delta               # 帶有語法高亮與行號的極美 Git Diff 工具
+
+    # 其他 CLI 工具
+    sc-im
+    (pkgs.visidata.overrideAttrs (oldAttrs: {
+      propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ (with pkgs.python3Packages; [
+        pandas       # 數據分析與高級計算
+        openpyxl     # Excel 讀寫支援
+        zstandard    # zstd 壓縮格式
+      ]);
+    }))
 
     # 📝 學術論文與開發必備
     tectonic            # 基於 Rust 的自給自足式 LaTeX 引擎
@@ -59,16 +87,9 @@
     uv                  # 🦀 極速 Rust 打造的 Python 套件與環境管理器
     nodejs
     pnpm                # 現代化、極速且節省空間的 Node.js 包管理器
-    (rstudioWrapper.override {
-      packages = with pkgs.rPackages; [
-        tidyverse      # 已包含 ggplot2, dplyr, readr, tidyr, purrr 等核心套件
-        devtools       # 套件開發工具
-        rmarkdown      # 動態報告輸出
-        knitr          # 報告編織工具
-        styler         # 提供 styler 以供 RFormat 呼叫
-        languageserver # 給 Neovim (nvim-lspconfig) 使用的 LSP Server
-      ];
-    })
+    lua5_4
+    myR        # 👈 提供 Terminal 裡的 `R` 與 `Rscript` 指令
+    myRStudio  # 👈 提供 RStudio 圖形介面
 
     # 🗃️ 終端工作流與 Yazi 預覽增強
     tmux                # 終端機複用器
@@ -266,6 +287,14 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    initContent = ''
+      # 大小寫不敏感 + 模糊比對
+      zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+      # 補全選單高亮
+      zstyle ':completion:*' menu select
+    '';
+
     shellAliases = {
       ll       = "ls -l";
       g        = "git";
@@ -371,16 +400,11 @@
       google-java-format prettier eslint_d black isort clang-tools lldb tex-fmt
       vscode-extensions.vadimcn.vscode-lldb.adapter delve texlab harper
       jdt-language-server ltex-ls-plus marksman pyright ruff python3Packages.debugpy
-      vscode-extensions.vscjava.vscode-java-debug
+      vscode-extensions.vscjava.vscode-java-debug tree-sitter
       vscode-extensions.vscjava.vscode-java-test
       vscode-langservers-extracted
       typescript-language-server
       vue-language-server
-    ];
-    plugins = with pkgs.vimPlugins; [
-      (nvim-treesitter.withPlugins (p: with p; [
-        html css vim lua javascript typescript latex go java r c cpp pug vue markdown markdown_inline json yaml bash python csv
-      ]))
     ];
   };
 
@@ -447,6 +471,28 @@
     signing = {
       key = "~/.ssh/id_ed25519.pub";
       signByDefault = true;
+    };
+  };
+
+  programs.jujutsu = {
+    enable = true;
+
+    # 這裡會自動生成 ~/.config/jj/config.toml
+    settings = {
+      user = {
+        name = "Jimmy Ming-Tai Wu";
+        email = "wmt@wmt35.idv.tw"; # 請替換為你的 Email
+      };
+
+      # 常用設定與 Alias
+      aliases = {
+        l = ["log" "-r" "all()"];
+        s = ["status"];
+        d = ["diff"];
+      };
+
+      # 設定預設編輯器 (可依喜好調整，如 nvim)
+      ui.editor = "nvim";
     };
   };
 
@@ -646,6 +692,7 @@
         { command = "floating enable, resize set 1200 800, move position center"; criteria = { title = ".*Geeqie.*"; }; }
         { command = "floating enable, resize set 800 600, move position center"; criteria = { app_id = "system-config-printer"; }; }
         { command = "floating enable, resize set 900 650, move position center"; criteria = { app_id = "simple-scan"; }; }
+        { command = "floating enable"; criteria = { title = "^R Graphics"; }; }
       ];
     };
     extraConfig = ''
