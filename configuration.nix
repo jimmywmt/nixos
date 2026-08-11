@@ -14,7 +14,9 @@
     ./local.nix  # 🎯 核心防線：Hostname 將由這個留在本地的檔案宣告
     ./packages.nix
     ./users.nix
-  ];
+  ]
+  # 如果目錄下有 configuration-fix.nix 才引入，否則傳回空串列 []
+  ++ (if builtins.pathExists ./configuration-fix.nix then [ ./configuration-fix.nix ] else []);
 
   # ----------------------------------------------------------------------------
   # ⚙️ SECTION 2: 引導載入器與 Linux 核心內核配置 (Bootloader & Kernel)
