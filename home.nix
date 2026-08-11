@@ -118,6 +118,7 @@
     playerctl           # 多媒體按鍵控制 CLI
     hyprpicker          # Wayland 螢幕吸管/取色器
     trash-cli           # CLI 安全回收桶工具
+    appimage-run        # AppImage 程式執行
 
     # 📸 1. 自訂一鍵區域截圖指令
     (writeShellScriptBin "shot-area" ''
