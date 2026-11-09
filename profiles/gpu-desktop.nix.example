@@ -1,0 +1,102 @@
+# 🏎️ 顯卡工作站共用骨架範本（實體檔 profiles/gpu-desktop.nix 不同步、永不推 GitHub）
+#
+# 用法（每台獨立顯卡工作站一次）：
+#   1. cp profiles/gpu-desktop.nix.example profiles/gpu-desktop.nix
+#   2. 依這台的顯卡解開對應流派（AMD 或 NVIDIA）
+#   3. jj st ＋ nh os switch ~/.config/nixos -H gpu-profile
+#
+# 為什麼要機器獨用：AMD 與 NVIDIA 的驅動、微碼、GPU 監控工具完全不同，
+# 共享一份會讓另一台吃到錯的驅動。
+{ config, pkgs, lib, ... }: {
+
+  # ============================================================================
+  # 🚀 核心排程優化與平行宇宙 (Specialisation 防線)
+  # ============================================================================
+
+  boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
+
+  specialisation = {
+    gaming.configuration = {
+      boot.kernelPackages = lib.mkForce pkgs.linuxPackages_xanmod;
+      powerManagement.cpuFreqGovernor = lib.mkForce "performance";
+      boot.kernelParams = [ "split_lock_mitigate=0" ];
+      services.printing.enable = lib.mkForce false;
+      services.avahi.enable = lib.mkForce false;
+      hardware.sane.enable = lib.mkForce false;
+      services.pcscd.enable = lib.mkForce false;
+      virtualisation.podman.enable = lib.mkForce false;
+      nix.gc.automatic = lib.mkForce false;
+      services.tumbler.enable = lib.mkForce false;
+      services.gvfs.enable = lib.mkForce false;
+      services.openssh.enable = lib.mkForce false;
+      services.tailscale.enable = lib.mkForce false;
+      home-manager.users.wmt = {
+        services.swayidle.enable = lib.mkForce false;
+        services.wlsunset.enable = lib.mkForce false;
+      };
+    };
+  };
+
+  # ============================================================================
+  # 🔌 獨立顯示卡硬體驅動（依這台顯卡選一個流派，另一個保持註解）
+  # ============================================================================
+
+  # 🏎️ 流派 A：AMD 顯示卡
+  # boot.initrd.kernelModules = [ "amdgpu" ];
+  # services.xserver.videoDrivers = [ "amdgpu" ];
+  # hardware.cpu.amd.updateMicrocode = true;
+  # hardware.graphics.extraPackages = with pkgs; [ rocmPackages.clr.icd ];
+
+  # 🟢 流派 B：NVIDIA 顯示卡
+  # boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+  # services.xserver.videoDrivers = [ "nvidia" ];
+  # hardware.nvidia = {
+  #   package = config.boot.kernelPackages.nvidiaPackages.latest;
+  #   modesetting.enable = true;
+  #   open = true;
+  #   nvidiaSettings = true;
+  # };
+
+  # ----------------------------------------------------------------------------
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  # ============================================================================
+  # 📺 登入管理與遊戲矩陣
+  # ============================================================================
+
+  services.displayManager.gdm.enable = false;
+
+  programs.regreet = {
+    enable = true;
+    settings = {
+      GTK = { };
+    };
+  };
+
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.greetd.enableGnomeKeyring = true;
+
+  programs.gamemode = {
+    enable = true;
+    enableRenice = true;
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    protontricks.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    heroic
+  ];
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "$HOME/.local/share/Steam/compatibilitytools.d";
+  };
+}

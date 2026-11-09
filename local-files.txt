@@ -14,3 +14,4 @@
 hostname.nix
 local-apps.nix
 local.nix
+profiles/gpu-desktop.nix
