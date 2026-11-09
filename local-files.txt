@@ -19,3 +19,4 @@ local-apps.nix
 local.nix
 profiles/gpu-desktop.nix
 hardware-configuration.nix
+configuration-fix.nix

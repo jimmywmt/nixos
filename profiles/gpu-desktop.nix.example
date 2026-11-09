@@ -56,6 +56,14 @@
   #   open = true;
   #   nvidiaSettings = true;
   # };
+  #
+  # NVIDIA CDI (Container Device Interface): 讓 Podman/Docker 容器能用 GPU
+  # 作用：開機時產生 /etc/cdi 與 /var/run/cdi 下的 CDI 描述檔，
+  #       容器即可用 --device nvidia.com/gpu=all 取用顯示卡
+  # 依賴：nixpkgs 模組會自動掛 podman.service / docker.service，開機前 udevadm settle
+  # 位置：放在 specialisation 之外＝一般開機與 gaming 皆生效
+  # 注意：僅 NVIDIA 流派需要；AMD 流派請保持註解
+  # hardware.nvidia-container-toolkit.enable = true;
 
   # ----------------------------------------------------------------------------
 
