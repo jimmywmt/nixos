@@ -8,8 +8,21 @@ require("config.lazy")
 vim.cmd("colorscheme everforest")
 
 -- 自動切換根目錄 (Auto Rooter)
--- 這裡定義哪些檔案代表「專案根目錄」（加入了 go.work）
-local root_names = { ".git", "go.work", "go.mod", "Cargo.toml", "pom.xml", "build.gradle", "Makefile" }
+-- 這裡定義哪些檔案代表「專案根目錄」（加入了 Gradle, Maven, Rust, Go 等專案標誌）
+local root_names = {
+	".git",
+	"settings.gradle",
+	"settings.gradle.kts",
+	"gradlew",
+	"build.gradle",
+	"build.gradle.kts",
+	"pom.xml",
+	"mvnw",
+	"go.work",
+	"go.mod",
+	"Cargo.toml",
+	"Makefile",
+}
 
 local root_augroup = vim.api.nvim_create_augroup("MyAutoRoot", {})
 vim.api.nvim_create_autocmd("BufEnter", {

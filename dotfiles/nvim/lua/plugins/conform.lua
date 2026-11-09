@@ -26,7 +26,7 @@ return {
 				yaml = { "prettier" },
 				markdown = { "prettier" },
 				-- Python
-				python = { "isort", "black" },
+				python = { "ruff_organize_imports", "ruff_format" },
 				-- C / C++
 				c = { "clang-format" },
 				cpp = { "clang-format" },

@@ -100,6 +100,8 @@ EOF]],
 		words = { enabled = true }, -- 游標下單字高亮
 		input = { enabled = true }, -- 更漂亮的 input 對話框
 		picker = { enabled = true },
+		explorer = { enabled = true }, -- 檔案總管
+		image = { enabled = true }, -- 圖片、PDF、Mermaid 終端預覽 (foot / ghostty 支援 Kitty graphics)
 		scroll = { -- 取代平滑滾動插件
 			enabled = true,
 			mouse = true, -- 開啟滑鼠/觸控板平滑滾動支援

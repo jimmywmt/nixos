@@ -28,6 +28,11 @@ require("lazy").setup({
 	install = { colorscheme = { "habamax" } },
 	checker = { enabled = true },
 
+	-- 關閉 luarocks 支援（無插件需要，避免找不到 hererocks 報錯）
+	rocks = {
+		enabled = false,
+	},
+
 	-- 強制將版本鎖定檔寫入可讀寫的 data 目錄 (~/.local/share/nvim/lazy-lock.json)
 	lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json",
 })

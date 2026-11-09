@@ -29,6 +29,11 @@ return {
 			"python",
 			"csv",
 			"nix",
+			"regex",
+			"rust",
+			"typst",
+			"tsx",
+			"scss",
 		})
 	end,
 }

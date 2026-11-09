@@ -126,7 +126,16 @@ return {
 
 		local config = {
 			cmd = cmd,
-			root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }),
+			root_dir = (function()
+				local setup = require("jdtls.setup")
+				-- 優先尋找根層級設定檔（特別是 Gradle 多模組中的 settings.gradle / gradlew）
+				local root = setup.find_root({ "settings.gradle", "settings.gradle.kts", "gradlew", ".git" }, vim.api.nvim_buf_get_name(0))
+				if not root then
+					-- 單模組或子模組備用判斷
+					root = setup.find_root({ "build.gradle", "build.gradle.kts", "pom.xml", "mvnw" }, vim.api.nvim_buf_get_name(0))
+				end
+				return root or vim.fn.getcwd()
+			end)(),
 			capabilities = capabilities,
 
 			settings = {
