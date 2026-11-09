@@ -277,6 +277,45 @@ hardware.nvidia = {
 | ROCm | ✅ `rocmPackages.clr.icd` | ❌ 不需要 |
 | GameMode `gpu_device` | `card1`（自動判定） | `card0`（自動判定） |
 
+### ⚠️ NVIDIA 機器的核心版本陷阱（2026-11 實測）
+
+NVIDIA 595.71.05 驅動**編不過 Linux 7.2.8**，會失敗並中止整個 rebuild：
+
+```
+nvidia/os-interface.c:764:5: error: implicit declaration of function 'strncpy'
+```
+
+原因：Linux 7.x 移除了一些隱含的 `<string.h>` 引入，NVIDIA 舊版原始碼沒顯式 include。
+
+**這是「共享骨架不能直接套用」的典型案例**——`gpu-desktop.nix.example` 預設用 `linuxPackages_latest`，
+AMD 機器吃最新核心沒問題，NVIDIA 機器會編不過。
+
+**NVIDIA 機器的解法**：改用 nixpkgs 穩定核心，不用 `_latest`：
+
+```nix
+# ❌ 會編不過
+boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;   # 7.2.8
+
+# ✅ 正確
+boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;          # 6.18.x
+```
+
+**版本對照（2026-11-09 實測）**：
+
+| 核心套件 | 版本 | NVIDIA 595.71.05 |
+|---|---|---|
+| `linuxPackages_latest` | 7.2.8 | ❌ `strncpy` 隱含宣告失敗 |
+| `linuxPackages` | 6.18.54 | ✅ 可編譯 |
+| `linuxPackages_xanmod` | 6.18.54 | ✅ 可編譯（gaming specialisation 也用這個） |
+
+未來 NVIDIA 推出修復版驅動後，可再改回 `_latest`。查目前 NVIDIA 版本的方式：
+
+```bash
+nix eval --raw .#nixosConfigurations.gpu-profile.pkgs.linuxPackages.nvidiaPackages.latest.version
+```
+
+若 nixpkgs 已更新到能編譯 7.x 的驅動版本，就可以解開這個鎖。
+
 `gpu_device` 的判斷寫法是自動的：
 
 ```nix
@@ -308,6 +347,16 @@ nh os switch ~/.config/nixos -H \''${NIX_PROFILE:-gpu-profile}
 ```
 
 注意是 `\''${...}`，不是 `\${...}`。
+
+### `nvidia/os-interface.c: implicit declaration of function 'strncpy'`
+
+**原因**：NVIDIA 驅動版本太舊，編不過新版 Linux 核心（7.x）。這會讓整個 rebuild 中止。
+
+**解法**：把核心降到 nixpkgs 穩定版（見第八段「NVIDIA 機器的核心版本陷阱」）。
+
+```nix
+boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;  # 不要用 _latest
+```
 
 ### `nh os switch` 卡在密碼
 
@@ -370,6 +419,7 @@ git push origin main
 | 2026-11-09 | 建立本機制：拆分 `local.nix`、新增 `hostname.nix` / `local-apps.nix`、移植 `local-files.txt`、移除 `pve-profile` |
 | 2026-11-09 | 將 `profiles/gpu-desktop.nix` 納入機器獨用機制（AMD / NVIDIA 兩台驅動不同） |
 | 2026-11-09 | 遠端移除機器獨用實體檔，只保留 `.example` 範本 |
+| 2026-11-09 | nvidia-nixos 修正顯卡流派（`amdgpu` → `nvidia`），並將核心鎖在 `linuxPackages` 6.18 解決驅動編譯失敗 |
 
 ---
 
