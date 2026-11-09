@@ -10,12 +10,13 @@
   # 🔌 SECTION 1: 外部模組路徑引入 (Declarative Imports)
   # ----------------------------------------------------------------------------
   imports = [
-    ./hardware-configuration.nix
     ./packages.nix
     ./users.nix
     # 📄 機器獨用檔通用 import（清單：local-files.txt）
     #    hostname.nix（身分）、local.nix（profile 選擇＋硬體掛載）、
-    #    local-apps.nix（機器獨用 app）。有實體檔就用，沒有就 fallback 到 .example。
+    #    local-apps.nix（機器獨用 app）、profiles/gpu-desktop.nix（顯卡流派）、
+    #    hardware-configuration.nix（硬體掛載，每台各自產生）。
+    #    有實體檔就用，沒有就 fallback 到 .example，兩者都沒有就跳過。
     ./modules/local-files.nix
   ]
   # 如果目錄下有 configuration-fix.nix 才引入，否則傳回空串列 []

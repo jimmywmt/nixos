@@ -7,11 +7,15 @@
 #   2. modules/local-files.nix（Nix 端通用 import：有實體檔就用、沒有就 fallback 到 .example）
 #
 # 新增機器獨用檔：① 寫 <名稱>.example 範本（會上 GitHub）
-#   → ② 在下方加一行檔名（repo 相對路徑）→ ③ 每台機器建實體檔並 jj st。
+#   → ② 在下方加一行檔名（repo 相對路徑）→ ③ 每台機器建實體檔並 git add。
 #
 # ⚠️ 已被 .gitignore 的檔（jj 看不見）不可列進來，否則 nppush 會報 fileset parse 錯。
+#
+# 本清單同時是 nppush/nppull 的「排除清單」：列在這裡的檔案，即使被 git 追蹤，
+# 也不會被推上 GitHub（由 jj split 排除），各機保持自己的版本。
 
 hostname.nix
 local-apps.nix
 local.nix
 profiles/gpu-desktop.nix
+hardware-configuration.nix

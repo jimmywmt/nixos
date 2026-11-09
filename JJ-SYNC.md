@@ -43,8 +43,9 @@
 | `local.nix` | `NIX_PROFILE` 與硬碟掛載（`fileSystems`） |
 | `local-apps.nix` | 機器獨用的套件、服務、硬體特化設定 |
 | `profiles/gpu-desktop.nix` | **顯卡驅動流派**（AMD 或 NVIDIA） |
+| `hardware-configuration.nix` | 硬體掛載（`nixos-generate-config` 產生，**每台 UUID 不同**） |
 
-每個都有對應的 `.example` 範本，會上 GitHub。
+每個都有對應的 `.example` 範本，會上 GitHub——**除了 `hardware-configuration.nix`**（見第四段說明）。
 
 ---
 
@@ -78,7 +79,6 @@ profiles/gpu-desktop.nix
 ---
 
 ## 四、關鍵陷阱：Nix flake 必須「看得到」檔案
-
 這是本機制最重要的一點，也是**最容易踩的坑**。
 
 ### 問題
@@ -135,6 +135,64 @@ cp local-apps.nix.example local-apps.nix    # 寫這台的獨用 app
 cp profiles/gpu-desktop.nix.example profiles/gpu-desktop.nix  # 解開這台的顯卡流派
 git add hostname.nix local-apps.nix local.nix profiles/gpu-desktop.nix
 nh os switch ~/.config/nixos -H gpu-profile
+```
+
+---
+
+### 🔴 最危險的案例：`hardware-configuration.nix` 被污染
+
+2026-11-09 實際遇到：nvidia-nixos 同步時，`hardware-configuration.nix` 被覆蓋成 **amd 機器**的版本。
+
+後果非常嚴重：
+
+| 項目 | 錯誤檔案（amd 的） | 這台真實的 UUID |
+|---|---|---|
+| 根分割區 | `b05d6c10-b668-48cd-b94a-4719fc02c6ba` | `ef3fec20-e954-421b-88ae-30ada65b53c5` |
+| EFI 分割區 | `378B-8036` | `4EA2-EA4A` |
+
+若照這個檔案 rebuild，開機會**找不到根分割區，直接無法開機**。
+
+**為什麼會發生**：`hardware-configuration.nix` 原本由 `nixos-generate-config` 產生，各機內容不同，但它曾被 git 追蹤並被 push/merge 到另一台。
+
+**檢查自己這台的 UUID 是否正確**：
+
+```bash
+# 檔案裡寫的
+grep -E "by-uuid" ~/.config/nixos/hardware-configuration.nix
+
+# 實際的
+findmnt -n -o UUID,SOURCE /
+findmnt -n -o UUID,SOURCE /boot
+```
+
+兩者**必須一致**。不一致就重新產生：
+
+```bash
+sudo nixos-generate-config --dir /tmp/hwgen
+cp /tmp/hwgen/hardware-configuration.nix ~/.config/nixos/hardware-configuration.nix
+git add ~/.config/nixos/hardware-configuration.nix
+```
+
+**為什麼這個檔案要列進 `local-files.txt`**：列進去 = 被 `nppush` 排除，各機保持自己的版本，不會互推。
+
+**但它沒有 `.example` 範本**，因為硬體設定沒有通用範本可言（用錯的 UUID 會開不了機）。所以 `modules/local-files.nix` 對這類檔案的規則是：
+
+```nix
+if builtins.pathExists real then real          # 有實體檔就用
+else if builtins.pathExists example then example  # 有範本才 fallback
+else null                                       # 都沒有就跳過，不報錯
+```
+
+`hardware-configuration.nix` 屬於第三種情況：各機自己產生，不靠範本。
+
+**`configuration.nix` 對應的改法**：不再直接 `import ./hardware-configuration.nix`，改由 `modules/local-files.nix` 統一引入，避免重複：
+
+```nix
+imports = [
+  ./packages.nix
+  ./users.nix
+  ./modules/local-files.nix   # ← 含 hardware-configuration.nix
+];
 ```
 
 ---
@@ -420,6 +478,7 @@ git push origin main
 | 2026-11-09 | 將 `profiles/gpu-desktop.nix` 納入機器獨用機制（AMD / NVIDIA 兩台驅動不同） |
 | 2026-11-09 | 遠端移除機器獨用實體檔，只保留 `.example` 範本 |
 | 2026-11-09 | nvidia-nixos 修正顯卡流派（`amdgpu` → `nvidia`），並將核心鎖在 `linuxPackages` 6.18 解決驅動編譯失敗 |
+| 2026-11-09 | 發現 `hardware-configuration.nix` 被 amd 版本污染（UUID 不符，會導致無法開機），重新產生正確版本並納入 `local-files.txt`；`modules/local-files.nix` 改為「缺檔就跳過」 |
 
 ---
 
