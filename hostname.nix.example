@@ -1,0 +1,9 @@
+# 🏷️ 機器獨用 hostname 範本（實體檔 hostname.nix 不同步、永不推 GitHub）
+#
+# 用法（每台機器一次）：
+#   1. cp hostname.nix.example hostname.nix
+#   2. 改成這台機器的 hostname
+#   3. nh os switch ~/.config/nixos -H gpu-profile
+{
+  networking.hostName = "change-me";
+}

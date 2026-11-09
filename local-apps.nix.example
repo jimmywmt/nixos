@@ -1,0 +1,34 @@
+# 📄 機器獨用 app 清單範本（實體檔 local-apps.nix 不同步、永不推 GitHub）
+#
+# 用法（每台機器一次）：
+#   1. cp local-apps.nix.example local-apps.nix
+#   2. 解開下方註解、寫這台需要的 app
+#   3. git add -A ＋ nh os switch ~/.config/nixos -H gpu-profile
+#
+# 這裡的清單會被 nix 模組系統「追加」到 configuration.nix／home.nix 的共享清單上，
+# 所以**不用重抄共享的 app**，只寫「這台限定」的就好。
+{ pkgs, ... }:
+{
+  # ── GUI 軟體（NixOS 走 nixpkgs 或 flatpak）─────────────────────────
+  # home-manager.users.wmt.home.packages = [
+  #   pkgs.vlc                  # 例：這台才需要的軟體
+  # ];
+
+  # ── CLI 工具（走 nix；同 home.nix 的 packages，但不會同步）───────────
+  # home-manager.users.wmt.home.packages = [
+  #   pkgs.ffmpeg
+  # ];
+
+  # ── 硬體特化軟體設定（例如 btop 的 GPU 監控）───────────────────────
+  # home-manager.users.wmt.programs.btop = {
+  #   package = pkgs.btop.override { rocmSupport = true; };
+  #   settings.shown_gpus = "amd";
+  # };
+
+  # ── 機器獨用服務（systemd 使用者服務，登入即自動啟動）───────────────
+  # systemd.user.services.example = {
+  #   Unit.Description = "範例服務";
+  #   Service.ExecStart = "${pkgs.example}/bin/example";
+  #   Install.WantedBy = [ "default.target" ];
+  # };
+}

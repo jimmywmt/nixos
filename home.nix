@@ -475,10 +475,10 @@
     shellAliases = {
       ll = "ls -l";
       g = "git";
-      nr = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-pve-profile} && exec zsh";
-      nru = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-pve-profile} -u && exec zsh";
-      nrt = "git add -A && nh os test ~/.config/nixos -H \${NIX_PROFILE:-pve-profile}";
-      nrb = "git add -A && nh os boot ~/.config/nixos -H \${NIX_PROFILE:-pve-profile}";
+      nr = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} && exec zsh";
+      nru = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} -u && exec zsh";
+      nrt = "git add -A && nh os test ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
+      nrb = "git add -A && nh os boot ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
       nc = "nh clean all --keep 5";
       nxc = "sudo nix-collect-garbage --delete-old";
       nxcg = "nix-collect-garbage -d && sudo nix-collect-garbage -d";

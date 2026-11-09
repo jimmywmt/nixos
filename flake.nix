@@ -16,22 +16,7 @@
   outputs = { self, nixpkgs, home-manager, nix-index-database, ... }@inputs: {
     nixosConfigurations = {
 
-      # 🪐 樣板 A：所有 PVE 虛擬機通用此配置
-      pve-profile = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          ./configuration.nix
-          ./profiles/pve-vm.nix
-          nix-index-database.nixosModules.nix-index
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-          }
-        ];
-      };
-
-      # 🏎️ 樣板 B：所有具備獨立顯卡的實體工作站通用此配置
+      # 🏎️ 樣板：所有具備獨立顯卡的實體工作站通用此配置
       gpu-profile = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
