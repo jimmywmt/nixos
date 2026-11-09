@@ -531,7 +531,7 @@
         fi
         ( cd ~/.config/nixos \
           && jj rebase -r @ --destination main@origin \
-          && nh os switch ~/.config/nixos -H \''${NIX_PROFILE:-gpu-profile} )
+          && nh os switch ~/.config/nixos -H ''${NIX_PROFILE:-gpu-profile} )
       }
     '';
 
