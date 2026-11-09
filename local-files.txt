@@ -1,0 +1,16 @@
+# 📄 機器獨用檔清單（非同步檔的「單一事實來源」）
+#
+# 意義：jj 看得到（在 repo 裡、未被 .gitignore）、Nix build 要讀、但永不推到 GitHub 的檔。
+#
+# 誰在讀這份清單：
+#   1. nppush / nppull（home.nix initContent 的 zsh 函數，經 _npp_fileset 讀）
+#   2. modules/local-files.nix（Nix 端通用 import：有實體檔就用、沒有就 fallback 到 .example）
+#
+# 新增機器獨用檔：① 寫 <名稱>.example 範本（會上 GitHub）
+#   → ② 在下方加一行檔名（repo 相對路徑）→ ③ 每台機器建實體檔並 jj st。
+#
+# ⚠️ 已被 .gitignore 的檔（jj 看不見）不可列進來，否則 nppush 會報 fileset parse 錯。
+
+hostname.nix
+local-apps.nix
+local.nix

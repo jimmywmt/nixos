@@ -470,15 +470,77 @@
       if [ -f "$HOME/.zshrc.local" ]; then
         source "$HOME/.zshrc.local"
       fi
+
+      # 📄 讀 local-files.txt 組出 jj fileset（排除所有機器獨用檔）
+      # 回傳例如 all() ~ ("hostname.nix"|"secret.nix")；檔案遺失或無有效條目時回傳 1
+      _npp_fileset() {
+        local _list="$HOME/.config/nixos/local-files.txt" _ex
+        if [ ! -r "$_list" ]; then
+          echo "⚠️  找不到 local-files.txt（應在 repo 根目錄），已取消。" >&2
+          return 1
+        fi
+        _ex=$(sed -e 's/#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+                  -e '/^$/d' -e 's/.*/"&"/' "$_list" | paste -sd '|' -)
+        if [ -z "$_ex" ]; then
+          echo "⚠️  local-files.txt 沒有有效條目，已取消。" >&2
+          return 1
+        fi
+        printf 'all() ~ (%s)' "$_ex"
+      }
+
+      # 🚀 推送共享設定到 GitHub（自動排除 local-files.txt 所列機器獨用檔）
+      nppush() {
+        if [ -z "$1" ]; then
+          echo "用法: nppush \"提交說明\""
+          return 1
+        fi
+        local _fs
+        _fs=$(_npp_fileset) || return 1
+        if [ -z "$(cd ~/.config/nixos && jj diff --summary "$_fs" 2>/dev/null)" ]; then
+          echo "ℹ️  沒有可推的共享修改（只有機器獨用檔或根本沒改動），已取消。"
+          return 0
+        fi
+        ( cd ~/.config/nixos \
+          && jj split -m "$1" "$_fs" \
+          && jj bookmark set main -r @- \
+          && { test -n "$(jj log -r @ --no-graph -T 'description' 2>/dev/null)" \
+               || jj describe -m "local: machine-only files (do not push)"; } \
+          && jj git push --bookmark main )
+      }
+
+      # ⬇️ 從 GitHub 抓取共享設定的更新，套用給這台機器
+      nppull() {
+        ( cd ~/.config/nixos && jj git fetch ) || return 1
+        if [ -n "$(cd ~/.config/nixos && jj log -r 'main@origin..main' --no-graph -T 'change_id.short()' 2>/dev/null)" ]; then
+          echo "⚠️  本機有尚未推送的 commit，先跑 nppush \"說明\" 把它推上去再 nppull。已取消。"
+          return 1
+        fi
+        local _fs
+        _fs=$(_npp_fileset) || return 1
+        if [ -n "$(cd ~/.config/nixos && jj diff --summary "$_fs" 2>/dev/null)" ]; then
+          echo "⚠️  本機有尚未提交的共享修改，先 nppush（或 jj restore 丟棄）再 nppull。已取消。"
+          return 1
+        fi
+        local _lm _rm
+        _lm=$(cd ~/.config/nixos && jj log -r '@-' --no-graph -T 'commit_id.short()')
+        _rm=$(cd ~/.config/nixos && jj log -r main@origin --no-graph -T 'commit_id.short()')
+        if [ "$_lm" = "$_rm" ]; then
+          echo "ℹ️  GitHub 沒有新東西，已跳過 rebuild。"
+          return 0
+        fi
+        ( cd ~/.config/nixos \
+          && jj rebase -r @ --destination main@origin \
+          && nh os switch ~/.config/nixos -H \''${NIX_PROFILE:-gpu-profile} )
+      }
     '';
 
     shellAliases = {
       ll = "ls -l";
       g = "git";
-      nr = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} && exec zsh";
-      nru = "git add -A && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} -u && exec zsh";
-      nrt = "git add -A && nh os test ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
-      nrb = "git add -A && nh os boot ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
+      nr = "jj st && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} && exec zsh";
+      nru = "jj st && nh os switch ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile} -u && exec zsh";
+      nrt = "jj st && nh os test ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
+      nrb = "jj st && nh os boot ~/.config/nixos -H \${NIX_PROFILE:-gpu-profile}";
       nc = "nh clean all --keep 5";
       nxc = "sudo nix-collect-garbage --delete-old";
       nxcg = "nix-collect-garbage -d && sudo nix-collect-garbage -d";

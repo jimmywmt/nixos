@@ -11,13 +11,12 @@
   # ----------------------------------------------------------------------------
   imports = [
     ./hardware-configuration.nix
-    ./local.nix  # 🔧 機器獨用：profile 選擇與硬體掛載
     ./packages.nix
     ./users.nix
-    # 🏷️ 機器獨用 hostname（有實體檔就用，否則 fallback 到範本）
-    (if builtins.pathExists ./hostname.nix then ./hostname.nix else ./hostname.nix.example)
-    # 💻 機器獨用 app（有實體檔就用，否則 fallback 到範本）
-    (if builtins.pathExists ./local-apps.nix then ./local-apps.nix else ./local-apps.nix.example)
+    # 📄 機器獨用檔通用 import（清單：local-files.txt）
+    #    hostname.nix（身分）、local.nix（profile 選擇＋硬體掛載）、
+    #    local-apps.nix（機器獨用 app）。有實體檔就用，沒有就 fallback 到 .example。
+    ./modules/local-files.nix
   ]
   # 如果目錄下有 configuration-fix.nix 才引入，否則傳回空串列 []
   ++ (if builtins.pathExists ./configuration-fix.nix then [ ./configuration-fix.nix ] else []);
