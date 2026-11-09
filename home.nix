@@ -344,6 +344,7 @@
         ];
       }) # 極輕量 GUI 檔案管理 (Thunar)
       tumbler # Thunar 的圖片縮圖生成引擎
+      imv # 🖼️ Wayland 原生極輕量圖片檢視器 (鍵盤導向，適合 Sway)
       file-roller # 極輕量 GTK 解壓縮總管
       p7zip # 萬能的 7z 核心
       zip # 標準 zip 壓縮工具
@@ -725,6 +726,27 @@
       show_hidden = true;
       sort_by = "alphabetical";
       sort_dir_first = true;
+    };
+    # 🖼️ 圖片檔案按 o 直接用 imv 開啟（Wayland 原生）
+    settings.opener = {
+      edit = [
+        {
+          run = ''"$EDITOR" "$@"'';
+          block = true;
+          desc = "Edit";
+        }
+      ];
+      open = [
+        {
+          run = ''xdg-open "$@"'';
+          desc = "Open";
+        }
+        {
+          run = ''imv "$@"'';
+          desc = "Open with imv";
+          mime = "image/*";
+        }
+      ];
     };
   };
 
