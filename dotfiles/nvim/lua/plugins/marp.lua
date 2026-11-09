@@ -7,9 +7,9 @@ return {
 	ft = "markdown",
 	config = function()
 		require("marp").setup({
-			marp_command = { "npx", "@marp-team/marp-cli@latest" },
+			marp_command = { "pnpm", "dlx", "@marp-team/marp-cli@latest" },
 			allow_local_files = true,
-			brower = nil,
+			browser = nil,
 		})
 	end,
 	keys = {

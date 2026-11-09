@@ -7,9 +7,13 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nix-index-database, ... }@inputs: {
     nixosConfigurations = {
 
       # 🪐 樣板 A：所有 PVE 虛擬機通用此配置
@@ -18,6 +22,7 @@
         modules = [
           ./configuration.nix
           ./profiles/pve-vm.nix
+          nix-index-database.nixosModules.nix-index
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -32,6 +37,7 @@
         modules = [
           ./configuration.nix
           ./profiles/gpu-desktop.nix
+          nix-index-database.nixosModules.nix-index
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

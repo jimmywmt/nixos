@@ -32,6 +32,8 @@ return {
 				cpp = { "clang-format" },
 				-- LaTeX
 				tex = { "tex-fmt" },
+				-- Nix (官方 RFC 166 標準格式化工具，若想換用 Alejandra 可改為 "alejandra")
+				nix = { "nixfmt" },
 				-- 萬用清理
 				-- ["*"] = { "codespell" },
 				["_"] = { "trim_whitespace" },
@@ -40,6 +42,10 @@ return {
 				["tex-fmt"] = {
 					-- 加上 --stdin 確保它是讀取緩衝區內容而非磁碟上的舊檔案
 					args = { "--stdin", "--nowrap" },
+				},
+				nixfmt = {
+					-- 傳入 "-" 支援從 stdin 讀取緩衝區內容並消除 1.4+ 的 deprecation 警告
+					args = { "-" },
 				},
 			},
 			-- 存檔自動排版

@@ -5,8 +5,10 @@
 -- - <localleader>ms: 關閉 markdown 預覽
 return {
 	"iamcco/markdown-preview.nvim",
-	-- 💡 加上 --shamefully-hoist，讓 pnpm 允許幽靈相依性 (Hoisting)
-	build = "cd app && pnpm install --shamefully-hoist",
+	-- 使用官方推薦函式安裝獨立預編譯執行檔，無需 Node.js/pnpm 相依
+	build = function()
+		vim.fn["mkdp#util#install"]()
+	end,
 	ft = { "markdown" },
 	cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 	config = function()

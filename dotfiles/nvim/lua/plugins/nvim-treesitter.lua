@@ -28,6 +28,7 @@ return {
 			"bash",
 			"python",
 			"csv",
+			"nix",
 		})
 	end,
 }

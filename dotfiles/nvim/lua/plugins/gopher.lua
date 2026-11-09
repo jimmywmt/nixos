@@ -49,7 +49,7 @@ return {
 		{
 			"<localleader>rr",
 			function()
-				Snacks.terminal.toggle("go run .")
+				Snacks.terminal.toggle("go run .; echo -e '\\n[Process exited. Press Enter to close]'; read -r")
 			end,
 			ft = "go",
 			desc = "Go Run (Project)",
@@ -57,7 +57,7 @@ return {
 		{
 			"<localleader>rb",
 			function()
-				Snacks.terminal.toggle("go build")
+				Snacks.terminal.toggle("go build; echo -e '\\n[Process exited. Press Enter to close]'; read -r")
 			end,
 			ft = "go",
 			desc = "Go Build (Project)",

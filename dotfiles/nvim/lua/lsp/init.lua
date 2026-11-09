@@ -21,6 +21,7 @@ function M.setup()
 		"texlab",
 		"ltex_ls_plus",
 		"harper_ls",
+		"nixd",
 	} -- 想載哪些就列哪些
 	for _, name in ipairs(servers) do
 		local ok, mod = pcall(require, "lsp.servers." .. name)
