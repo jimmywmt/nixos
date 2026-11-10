@@ -483,3 +483,5 @@ git push origin main
 ---
 
 *本文件由 amd-nixos 端維護，最後更新：2026-11-09*
+
+<!-- nppush/nppull 雙向驗證 2026-11-10-2017 -->
